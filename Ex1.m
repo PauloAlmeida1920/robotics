@@ -34,7 +34,7 @@ T0_2 = T0_1 * trans(0, 0, 0, [0 0 3]'); % Pós-Multiplicação
 
 % 3) Rotação de -45º sobre o eixo [1 -1 1] do sistema de coordenadas object inicial: 
 
-% Eixo (assumindo que o eixo está no referencial 1)
+% Eixo (assumindo que o eixo está no referencial 0: posição inicial do objecto)
 phi = deg2rad(-45);
 r = [1 -1 1];
 
