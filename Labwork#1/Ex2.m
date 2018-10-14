@@ -1,14 +1,16 @@
-clear all
 close all
+clear all
 clc
 
 disp('%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-disp('%%    [Robótica - 12/09/2017 ~ 08/10/2017] LABWORK#1 - PROBLEMA 3    %%')
+disp('%%    [Robótica - 27/09/2018 ~ 14/10/2018] LABWORK#1 - PROBLEMA 1    %%')
 disp('%%                                                                   %%')
 disp('%%                   Frederico Vaz, nº 2011283029                    %%')
 disp('%%                   Paulo Almeida, nº 2010128473                    %%')
 disp('%%                                                                   %%')
-disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+disp('%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
+disp(' ')
+
 
 %% Descrição: 
 % Considere o ambiente de trabalho que se apresenta, onde o objectivo é usar a
@@ -75,7 +77,7 @@ pointsC = createObject(pointsC, [0 3 0]);
 pointsM = createObject(pointsM, [0 0 1]); 
         
 % Desenha objectos projectados
-figure(1)
+figure('units','normalized','outerposition',[0 0 1 1]);
 subplot(2,2,1)
 drawObject(pointsA, 'y');    
 subplot(2,2,2)
@@ -101,7 +103,7 @@ rTc = trans(90, 0, 0, [3 -5/2 0]');
 rTm = trans(90, 0, 0, [1 -7/2 0]');
 
 % Nota: Ajustou-se o Referencial do Gripper e A 
-figure(2)
+figure('units','normalized','outerposition',[0 0 1 1]);
 subplot(2,2,1)
 pointsA = transPoints(rTa, pointsA);
 drawObject(pointsA, 'y')    
@@ -136,7 +138,7 @@ rTc = trans(-90, 0, 0, poseC');
 rTm = trans(-90, 0, 0, poseM');
 
 % Transforma points do objecto em relação ao referencial R ou mundo
-figure(3)
+figure('units','normalized','outerposition',[0 0 1 1]);
 animateObject(rTm, rTa, rTb, rTc); 
 
 %% Relações entre objectos seguindo a sequência M -> A -> B -> C

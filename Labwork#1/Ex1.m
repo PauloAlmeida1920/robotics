@@ -3,7 +3,7 @@ clear all
 clc
 
 disp('%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-disp('%%    [Robótica - 12/09/2018 ~ 14/10/2018] LABWORK#1 - PROBLEMA 1    %%')
+disp('%%    [Robótica - 27/09/2018 ~ 14/10/2018] LABWORK#1 - PROBLEMA 1    %%')
 disp('%%                                                                   %%')
 disp('%%                   Frederico Vaz, nº 2011283029                    %%')
 disp('%%                   Paulo Almeida, nº 2010128473                    %%')
