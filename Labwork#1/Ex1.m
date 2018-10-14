@@ -58,12 +58,12 @@ trplot(Tw_0,'rgb', 'axis', [-10 10 -10 10 -10 10]);
 hold on
 tranimate(Tw_0, T0_1, 'rgb', 'axis', [-10 10 -10 10 -10 10],'fps', FPS);
 hold on
-tranimate(T0_1, T1_2, 'rgb', 'axis', [-10 10 -10 10 -10 10],'fps', FPS);
+tranimate(T0_1, T0_2, 'rgb', 'axis', [-10 10 -10 10 -10 10],'fps', FPS);
 hold on
 % Eixo 
-plot3([Tw_0(1,4) Tw_0(1,4)+1], [Tw_0(2,4) Tw_0(2,4)-1], [Tw_0(3,4) Tw_0(3,4)+1], 'k-');
+plot3([Tw_0(1,4) Tw_0(1,4)+1], [Tw_0(2,4) Tw_0(2,4)-1], [Tw_0(3,4) Tw_0(3,4)+1], 'm-');
 hold on
-tranimate(T1_2, T2_3, 'rgb', 'axis', [-10 10 -10 10 -10 10],'fps', FPS);
+tranimate(T0_2, T2_3, 'rgb', 'axis', [-10 10 -10 10 -10 10],'fps', FPS);
 hold on
 tranimate(T2_3, T3_4, 'rgb', 'axis', [-10 10 -10 10 -10 10],'fps', FPS);
 hold on
