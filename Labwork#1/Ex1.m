@@ -53,7 +53,7 @@ T3_4 = trans(90, 0, 0, [0 0 0]') * T2_3; % Pre-Multiplicação
 %% Animação do Objecto
 FPS = 10;
 
-figure(3);
+figure('units','normalized','outerposition',[0 0 1 1]);
 trplot(Tw_0,'rgb', 'axis', [-10 10 -10 10 -10 10]);
 hold on
 tranimate(Tw_0, T0_1, 'rgb', 'axis', [-10 10 -10 10 -10 10],'fps', FPS);
