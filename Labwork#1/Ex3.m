@@ -15,21 +15,21 @@ disp('*************************** Exercício 3 ******************************')
 
 %% Robot 3-DOF (2 de rotação e 1 prismáticos): RPR
 
-syms theta1 d2 theta3 alfa
+syms theta1 theta2 theta3 theta4 theta5
 
 % Comprimentos dos elos:
-L2 = 10;
+
 
 % Junta Rotacional ou Prismatica:
 R = 1; P = 0;
 %_________________________________________________________________________________
 %          thetai  |  di  |  ai |  alfai | offseti | jointtypei
 %_________________________________________________________________________________
-PJ_DH = [  theta1      0      0     pi/2     pi/2           R;   % Junta Rotacional
+PJ_DH = [  theta1      0      0     pi/2        0           R;   % Junta Rotacional
 %_________________________________________________________________________________
-           theta2      0      0    -pi/2        0           P;   % Junta Rotacional
+           theta2      0      4        0     pi/2           P;   % Junta Rotacional
 %_________________________________________________________________________________
-           theta3      0      0     pi/2        0           R;   % Junta Rotacional
+           theta3      0      2        0        0           R;   % Junta Rotacional
 %_________________________________________________________________________________
            theta4      0      0    -pi/2    -pi/2           R; % Junta Rotacional
 %_________________________________________________________________________________
