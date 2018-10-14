@@ -13,7 +13,7 @@ disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
 disp(' ')
 disp('*************************** Exercício 3 ******************************')
 
-%% Robot 3-DOF (2 de rotação e 1 prismáticos): RPR
+%% Robot 3-DOF: RRR-RR
 
 syms theta1 theta2 theta3 theta4 theta5
 
@@ -22,19 +22,19 @@ syms theta1 theta2 theta3 theta4 theta5
 
 % Junta Rotacional ou Prismatica:
 R = 1; P = 0;
-%_________________________________________________________________________________
-%          thetai  |  di  |  ai |  alfai | offseti | jointtypei
-%_________________________________________________________________________________
-PJ_DH = [  theta1      0      0     pi/2        0           R;   % Junta Rotacional
-%_________________________________________________________________________________
-           theta2      0      4        0     pi/2           P;   % Junta Rotacional
-%_________________________________________________________________________________
-           theta3      0      2        0        0           R;   % Junta Rotacional
-%_________________________________________________________________________________
-           theta4      0      0    -pi/2    -pi/2           R; % Junta Rotacional
-%_________________________________________________________________________________
-           theta5      1      0        0        0           R; ]; % Junta Rotacional
-%_________________________________________________________________________________
+%______________________________________________________________________________________
+%          thetai  |  di  |  ai |  alfai | offseti | jointtypei | range_min | range_max         
+%______________________________________________________________________________________
+PJ_DH = [  theta1      0      0     pi/2        0           R       -pi/2       pi/2;   % Junta Rotacional
+%______________________________________________________________________________________
+           theta2      0      4        0     pi/2           R       -pi/3       pi/4;   % Junta Rotacional
+%______________________________________________________________________________________
+           theta3      0      2        0        0           R       -pi/2       pi/2;   % Junta Rotacional
+%______________________________________________________________________________________
+           theta4      0      0    -pi/2    -pi/2           R       -pi/2       pi/2;   % Junta Rotacional
+%______________________________________________________________________________________
+           theta5      1      0        0        0           R       -pi         pi; ];  % Junta Rotacional
+%______________________________________________________________________________________
 
 % A cinematica directa da base   até ao Gripper: 
 [ oTg, Ti ] = direct_kinematics(PJ_DH);       
@@ -53,7 +53,8 @@ for i = 1 : size(PJ_DH,1)
         L(i) = Link('d',eval(PJ_DH(i,2)),...
                     'a', eval(PJ_DH(i,3)),...
                     'alpha', eval(PJ_DH(i,4)),...
-                    'offset', eval(PJ_DH(i,5)));
+                    'offset', eval(PJ_DH(i,5)),...
+                    'qlim', eval(PJ_DH(i,7:8)));
     end
     
     if PJ_DH(i,6) == P              % Junta Prismática
@@ -72,29 +73,8 @@ robot = SerialLink(L, 'name', 'Robot Planar RRR');
 
 
 %% VARIÁVEIS GLOBAIS 
-
-% Inicialização do vector de juntas na nossa posição "home" a começar no
-% no ponto inicial [ bmin, -30, 35] dado no enuciado 
-
-% POSIÇÃO HOME:
-bTf = [  0  -cos(alfa)  sin(alfa)  40;
-         0   sin(alfa)  cos(alfa)  20; 
-         0   0          0           0;  
-         0   0          0           1  ];
-
-[ q ] = inverse_kinematics_ex3(bTf, 0);
-
-q = eval([ q(1:3) 0 ]);
-
-% Juntas em symbolic p/ resolver o Jacobiano
-q_aux = [ theta1 d2 theta3 ];
-
-% Construir jacobiana 2 partir dos parâmetros calculados na cinemática inversa
-Jac = Jacobian(oTg, Ti, q_aux, PJ_DH(:,6));
-
-% Componentes de velocidade objectivo [ vx vy wz ]
-Jac_ = [ Jac(1:2, 1:3); Jac(6,1:3) ];
-
+ 
+q = [0 0 pi/2 pi/3 0]; %valor das juntas em "home"
 
 %% MENU ("main")
 
@@ -133,19 +113,10 @@ while(select ~= STOP)
     if select == 2
         figure('units','normalized','outerposition',[0 0 1 1]);
          % Prespectiva de lado do Robot  
-        subplot(1,2,1);
-        robot.plot(q, 'workspace', [-10 90 -10 90 -10 90], 'reach', ... 
-                       1, 'scale', 10, 'zoom', 0.25); % 'view', 'top', 'trail', 'b.');
-                   
-        % Prespectiva de topo do Robot -------------------------------------
-        subplot(1,2,2);
-        robot.plot(q, 'workspace', [-10 90 -10 90 -10 90],...
-                      'reach', 1,...
-                      'scale', 10,...
-                      'zoom', 0.25,...
-                      'view',...
-                      'top'); % 'trail', 'b.');
-                   
+
+        robot.teach(q, 'workspace', [-7 7 -7 7 -1 7], 'reach', ... 
+                       1, 'scale', 1, 'zoom', 0.25); % 'view', 'top', 'trail', 'b.');
+
     disp('#######################################################################') 
     end  
 
