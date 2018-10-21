@@ -45,6 +45,29 @@ oTg = simplify(oTg);
 Ti  = simplify(Ti);
 
 
+
+%% INICIALIZAÇÃO DO ROBOT: POSIÇÃO HOME
+ 
+
+%% Animação do Robô da posição Home para a posição objectivo
+k = pi/2;
+
+figure('units','normalized','outerposition',[0 0 1 1]);
+
+for i=0:0.1:k 
+    
+    hold off
+    pause(0.0001)
+    
+    q = [0 i 0 0 0];
+    
+    animateRobot(T0, Ti, q);
+   
+end
+% ^ um for para cada limite das juntas     
+
+
+
 %% MENU ("main")
 
 % Variaveis MENU
@@ -78,7 +101,6 @@ while(select ~= STOP)
     
     %% PLOTS DO ROBOT:
     
-    %% POSIÇÃO HOME
     if select == 2
         disp('______________________________________________________________________')
         disp(' ')
@@ -101,7 +123,7 @@ while(select ~= STOP)
         T0_5 = T0_1 * T1_2 * T2_3 * T3_4 * T4_5;
 
         % Visualização
-        axis = [-5 8 -2 8 -2 5];
+        axis = [0 10 -10 10 -2 10];
 
         figure('units','normalized','outerposition',[0 0 1 1]);
         % Referencial Home 
@@ -120,7 +142,6 @@ while(select ~= STOP)
     disp('#######################################################################') 
     end 
     
-    %% Animação do Robô da juntas Home para as juntas  objectivo
     if select == 3
         disp('______________________________________________________________________')
         disp(' ')
@@ -128,20 +149,9 @@ while(select ~= STOP)
         disp('______________________________________________________________________')
         disp(' ')
         
-        k = pi/2;
-
-        figure('units','normalized','outerposition',[0 0 1 1]);
-
-        for i=0:0.1:k 
-
-            hold off
-            pause(0.0001)
-
-            q = [0 i -i -i i];
-
-            animateRobot(T0, Ti, q);
-
-        end
+        
+        
+        
 
     disp('#######################################################################') 
     end 
