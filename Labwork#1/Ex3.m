@@ -137,7 +137,7 @@ while(select ~= STOP)
             hold off
             pause(0.0001)
 
-            q = [0 i -i -i i];
+            q = [ i -i -i i];
 
             animateRobot(T0, Ti, q);
 
