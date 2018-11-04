@@ -10,13 +10,13 @@ T2_3 = eval(subs(Ti(:,:,3), q(1,3)));
 T3_4 = eval(subs(Ti(:,:,4), q(1,4)));
 T4_5 = eval(subs(Ti(:,:,5), q(1,5)));
 
-% Representação dos Elos do workspace (mundo)
+% RepresentaÃ§Ã£o dos Elos do workspace (mundo)
 T0_2 = T0_1 * T1_2;
 T0_3 = T0_1 * T1_2 * T2_3;
 T0_4 = T0_1 * T1_2 * T2_3 * T3_4;
 T0_5 = T0_1 * T1_2 * T2_3 * T3_4 * T4_5;
 
-% Visualização
+% VisualizaÃ§Ã£o
 axis = [-8 8 -2 8 -2 8];
 
 % Referencial Home 

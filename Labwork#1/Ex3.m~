@@ -120,11 +120,11 @@ while(select ~= STOP)
     disp('#######################################################################') 
     end 
     
-    %% Animação do Robô da juntas Home para as juntas  objectivo
+    %% Animação do Robó da juntas Home para as juntas  objectivo
     if select == 3
         disp('______________________________________________________________________')
         disp(' ')
-        disp('Animação')
+        disp('Anima��o')
         disp('______________________________________________________________________')
         disp(' ')
         
@@ -137,7 +137,7 @@ while(select ~= STOP)
             hold off
             pause(0.0001)
 
-            q = [0 i -i -i i];
+            q = [i i -i -i i];
 
             animateRobot(T0, Ti, q);
 
