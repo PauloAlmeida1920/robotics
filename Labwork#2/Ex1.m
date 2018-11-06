@@ -28,15 +28,11 @@ R = 1; P = 0;
 PJ_DH = [  theta1    0    L1       0        0           R;   % Junta Rotacional
            theta2    0    L2       0        0           R;   % Junta Rotacional
            theta3    0     0    pi/2     pi/2           R;   % Junta Rotacional  
-                0   L3     0    pi/2     pi/2           R ]; % Gripper Fixo
+                0   L3     0       0     pi/2           R ]; % Gripper Fixo
 
 
 % A cinemática directa até ao Gripper
 [ T0_G, Ti ] = MGD_DH(PJ_DH);  
-
-
-T0_G = simplify(T0_G);
-Ti = simplify(Ti);
 
 
 % Criar Links Juntas Rotacionais -> o theta é variável
@@ -62,8 +58,8 @@ for i=1:3
     T0_1 = eval(subs(Ti(:,:,1), q(i,1))); 
     T1_2 = eval(subs(Ti(:,:,2), q(i,2))); 
     T2_I = eval(subs(Ti(:,:,3), q(i,3))); 
-    TI_H = Ti(:,:,4);
-    
+    TI_H = Ti(:,:,4);    
+   
     A0_2(:,:,i) = T0_1 * T1_2;
     A0_H(:,:,i) = eval( T0_1 * T1_2 * T2_I * TI_H );
     
@@ -77,70 +73,28 @@ end
 
 
 %% d) e) Solução da Cinemática Inversa 
-% disp('d) e) Soluçãoo de Cinemática Inversa ')
-% disp(' ')
-% 
-% disp('Matriz simbólica do Mundo ao Gripper: O T G')
-% disp(' ')
-% disp(oTg)
-% 
-% disp('Matriz simbólica do Mundo ao Braço: O T 2')
-% disp(' ')
-% T02_SYMS = Ti(:,:,1)*Ti(:,:,2);
-% disp(simplify(T02_SYMS))
+
+% Matriz simbólica do Mundo ao Braço: O T 2
+T0_1 = Ti(:,:,1);
+T1_2 = Ti(:,:,2);
+
+T0_2 = simplify( T0_1 * T1_2 );
 
 
-% disp('--------------------------------------------------------------------')
-% 
-% % Conjuntos das juntas para cada caso da alínea anterior:
-% disp(' ')
-% disp('Conjunto de soluções: ')
-% for i=1:3
-%     [q(i,:), q_(i,:)] = inverse_kinematics_ex2(A0H(:,:,i));
-%     
-%     disp(' ')
-%     disp('Caso positivo')
-%     disp(['q' num2str(i) ' = [ ' num2str(rad2deg(q(i,1))) 'Âº ' num2str(rad2deg(q(i,2))) 'Âº ' num2str(rad2deg(q(i,3))) 'Âº ]'])
-%     disp(' ')
-%     
-%     disp('Caso negativo:')
-%     disp(['q' num2str(i) ' = [ ' num2str(rad2deg(q_(i,1))) 'Âº ' num2str(rad2deg(q_(i,2))) 'Âº ' num2str(rad2deg(q_(i,3))) 'Âº ]'])
-%     disp(' ')
-% 
-% 
-% end
-% disp('--------------------------------------------------------------------')
-% 
-% disp('Confirmação usando a toolbox Robotics:')
-% for i=1:3
-%    % Caso positivo
-%    A0H_p = robot.fkine([q(i,:) 0]); 
-%    % Caso negativo
-%    A0H_n = robot.fkine([q(i,:) 0]); 
-%    
-%    if(1)
-%         disp(['A matriz A0H c/ q = q', num2str(i), ' estÃ¡ correcta!'])
-%    else
-%         disp(['A matriz A0H c/ q = q', num2str(i), ' nÃ£o estÃ¡ correcta!'])
-%    end
-%    
-% end
-% 
-% disp('--------------------------------------------------------------------')
-% %% Estamos aqui com um erro!
-% % ConfirmaÃ§Ã£o da CinemÃ¡tica Inversa pela toolbox Robotics
-% disp(' ')
-% disp('CinemÃ¡tica Inversa pela toolbox Robotics:')
-% 
-% for i=1:3
-%    
-%     q__(i,:) = robot.ikine(A0H(:,:,i), [0 0 0 0]) % [1 1 0 1 1 0]
-%     disp('')
-%     disp(['q' num2str(i) ' = [ ' num2str(rad2deg(q__(i,1))) 'Âº ' num2str(rad2deg(q__(i,2))) 'Âº ' num2str(rad2deg(q__(i,3))) 'Âº ]'])
-%     disp(' ')
-% end
-% disp(' ')
-% disp('########################################################################')
+% P/ os conjuntos das juntas da alínea anterior:
+for i=1:3
+    
+    [q(i,:), q_(i,:)] = inverse_kinematics_ex2(A0_H(:,:,i));
+    
+end
+
+% Confirmação usando a toolbox Robotics
+for i=1:2
+
+    q_ikine(i,:) = robot.ikine(A0_H(:,:,i), 'mask', [1 1 0 1 0 1]);
+    
+    % NOTA: Não está a funcionar para a junta 3...
+end
 
 
 
@@ -148,7 +102,7 @@ end
 
 % Variaveis MENU
 select = 0;
-STOP = 8;
+STOP = 9;
 
 while(select ~= STOP)
     
@@ -159,6 +113,7 @@ while(select ~= STOP)
                                                    'Robot q = [ 0º  0º  0º]',...
                                                    'Robot q = [10º 20º 30º]',...
                                                    'Robot q = [90º 90º 90º]',...
+                                                   'Cinemática Inversa',...
                                                    'Quit');  
                                                 
     % a) Matriz dos parametros de Denavith-Hartenberg: PJ_DH
@@ -225,8 +180,49 @@ while(select ~= STOP)
          
     end
     
-    % clear workspace
+    % Cinemática Inversa
     if select == 8
+        disp('d) e) Solução de Cinemática Inversa ')
+        disp(' ')
+
+        disp('Matriz simbólica do Mundo ao Gripper: O T G')
+        disp(' ')
+        disp(T0_G)
+        disp(' ')
+        disp('Matriz simbólica do Mundo ao Braço: O T 2')
+        disp(' ')
+        disp(T0_2)
+        disp(' ')
+        disp('______________________________________________________________________')   
+
+        % Conjuntos das juntas para cada caso da alínea anterior:
+        disp(' ')
+        disp('Conjunto de soluções: ')
+        
+        for i=1:3
+            disp(['b) ' num2str(i) ')'])
+            disp(' ')
+            disp('Caso positivo')
+            disp(['q' num2str(i) ' = [ ' num2str(rad2deg(q(i,1))) 'º ' num2str(rad2deg(q(i,2))) 'º ' num2str(rad2deg(q(i,3))) 'º ]'])
+            disp(' ')
+
+            disp('Caso negativo:')
+            disp(['q' num2str(i) ' = [ ' num2str(rad2deg(q_(i,1))) 'º ' num2str(rad2deg(q_(i,2))) 'º ' num2str(rad2deg(q_(i,3))) 'º ]'])
+            disp(' ')
+            disp(' ')
+            if i<3
+            disp('c) Confirmação usando a toolbox Robotics:')
+            disp(' ')
+            disp(['q' num2str(i) ' = [ ' num2str(rad2deg(q_ikine(i,1))) 'º ' num2str(rad2deg(q_ikine(i,2))) 'º ' num2str(rad2deg(q_ikine(i,3))) 'º ]'])
+            disp(' ')
+            end
+            
+            disp('______________________________________________________________________')   
+        end
+    end
+    
+    % clear workspace
+    if select == STOP
        close all; 
     end
     
