@@ -17,26 +17,20 @@ disp(' ')
 
 syms theta1 theta2 theta3
 
+% a) Matriz dos parâmetros de Denavith-Hartenberg: PJ_DH
+
 % Cumprimentos dos elos
 L1 = 4; L2 = 3; L3 = 2;
 % Junta Rotacional ou Prismática
 R = 1; P = 0;
 
+%          thetai   di    ai   alfai  offseti  jointtypei       
+PJ_DH = [  theta1    0    L1       0        0           R;   % Junta Rotacional
+           theta2    0    L2       0        0           R;   % Junta Rotacional
+           theta3    0     0    pi/2     pi/2           R;   % Junta Rotacional  
+                0   L3     0       0     pi/2           R ]; % Gripper Fixo
 
-% a) Matriz dos parâmetros de Denavith-Hartenberg: PJ_DH
 
-%____________________________________________________________________________________
-%          thetai  |  di  |  ai |  alfai | offseti | jointtypei
-%____________________________________________________________________________________      
-PJ_DH = [  theta1      0     L1        0         0           R;   % Junta Rotacional
-%____________________________________________________________________________________
-           theta2      0     L2        0         0           R;   % Junta Rotacional
-%____________________________________________________________________________________
-           theta3      0      0     pi/2      pi/2           R;   % Junta Rotacional
-%____________________________________________________________________________________
-                0     L3      0        0      pi/2           R ]; % Gripper Fixo
-%____________________________________________________________________________________
-            
 % A cinemática directa até ao Gripper
 [ T0_G, Ti ] = MGD_DH(PJ_DH);  
 
@@ -70,11 +64,12 @@ for i=1:3
     A0_H(:,:,i) = eval( T0_1 * T1_2 * T2_I * TI_H );
     
     
-    % c) Confirmação das Matrizes usando a robotics toolbox 
+    % c) Confirmação das Matrizes usando a toolbox Robotics
     T02(:,:,i) = robot_T0_2.fkine(q(i,1:2));
     T0H(:,:,i) = robot.fkine([q(i,:) 0]);
     
 end
+
 
 
 %% d) e) Solução da Cinemática Inversa 
@@ -93,10 +88,10 @@ for i=1:3
     
 end
 
-% Confirmação usando a robotics toolbox
+% Confirmação usando a toolbox Robotics
 for i=1:2
 
-    q_ikine(i,:) = robot.ikine(A0_H(:,:,i), 'mask', [1 1 0 1 0 1]); % [x y x roll pitch yaw] 
+    q_ikine(i,:) = robot.ikine(A0_H(:,:,i), 'mask', [1 1 0 1 0 1]);
     
     % NOTA: Não está a funcionar para a junta 3...
 end
@@ -137,18 +132,17 @@ while(select ~= STOP)
         disp(' ')
         disp(T0_G)
         disp(' ')
-        disp('______________________________________________________________________')   
+        disp('______________________________________________________________________')
+    disp('#######################################################################')   
     end  
     
     % b) Matrizes de Cinemática Directa de 0 A 2 e 0 A H
     if select == 2 || select == 3 || select == 4
         
         i = select - 1;
-                
-        disp('______________________________________________________________________')
+        
         disp(' ')
-        disp(['b) q' num2str(i) ' = [ ' num2str(rad2deg(q(i,1))) 'º ' num2str(rad2deg(q(i,2))) 'º ' num2str(rad2deg(q(i,3))) 'º ]'])
-        disp('______________________________________________________________________')
+        disp(['q' num2str(i) ' = [ ' num2str(rad2deg(q(i,1))) 'º ' num2str(rad2deg(q(i,2))) 'º ' num2str(rad2deg(q(i,3))) 'º ]'])
         disp(' ')
         disp('A02:')
         disp(' ')
@@ -156,7 +150,7 @@ while(select ~= STOP)
         disp(' ')
         disp('c) Confirmação usando a toolbox Robotics:')
         disp(' ')
-        disp(double(T02(:,:,i)))
+        disp(T02(:,:,i))
         disp('______________________________________________________________________') 
         disp(' ')
         disp('A0H:')
@@ -201,28 +195,25 @@ while(select ~= STOP)
         disp(' ')
         disp('______________________________________________________________________')   
 
-        % Conjuntos das juntas para cada caso da alínea anterior:
+        % Conjuntos das juntas para cada caso da al�nea anterior:
         disp(' ')
         disp('Conjunto de soluções: ')
         
         for i=1:3
-            disp('______________________________________________________________________')
-            disp(' ')
-            disp(['b) q' num2str(i)])
-            disp('______________________________________________________________________')
+            disp(['b) ' num2str(i) ')'])
             disp(' ')
             disp('Caso positivo')
-            disp(['q' num2str(i) ' = [ ' num2str(rad2deg(q(i,1))) 'º ' num2str(rad2deg(q(i,2))) 'º ' num2str(rad2deg(q(i,3))) 'º ]'])
+            disp(['q' num2str(i) ' = [ ' num2str(rad2deg(q(i,1))) 'º ' num2str(rad2deg(q(i,2))) 'º ' num2str(rad2deg(q(i,3))) '� ]'])
             disp(' ')
 
             disp('Caso negativo:')
-            disp(['q' num2str(i) ' = [ ' num2str(rad2deg(q_(i,1))) 'º ' num2str(rad2deg(q_(i,2))) 'º ' num2str(rad2deg(q_(i,3))) 'º ]'])
+            disp(['q' num2str(i) ' = [ ' num2str(rad2deg(q_(i,1))) 'º ' num2str(rad2deg(q_(i,2))) 'º ' num2str(rad2deg(q_(i,3))) '� ]'])
             disp(' ')
             disp(' ')
             if i<3
             disp('c) Confirmação usando a toolbox Robotics:')
             disp(' ')
-            disp(['q' num2str(i) ' = [ ' num2str(rad2deg(q_ikine(i,1))) 'º ' num2str(rad2deg(q_ikine(i,2))) 'º ' num2str(rad2deg(q_ikine(i,3))) 'º ]'])
+            disp(['q' num2str(i) ' = [ ' num2str(rad2deg(q_ikine(i,1))) 'º ' num2str(rad2deg(q_ikine(i,2))) '� ' num2str(rad2deg(q_ikine(i,3))) '� ]'])
             disp(' ')
             end
             

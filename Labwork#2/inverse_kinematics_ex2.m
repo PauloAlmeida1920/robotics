@@ -1,12 +1,12 @@
 
-%% Função da Cinemática Inversa do Robô
+%% FunÃ§Ã£o da CinemÃ¡tica Inversa do RobÃ´
 function [ q_pos, q_neg ] = inverse_kinematics_ex2(oTh)
 
     % Cumprimento do elo 3
     L3 = 2;
     
     % T02 a partir da T0H:
-    % T02 = T0H - L3*R0G,oz, alfa = 0º
+    % T02 = T0H - L3*R0G,oz, alfa = 0Âº
     tx_ = oTh(1,4) - L3*oTh(1,3);
     ty_ = oTh(2,4) - L3*oTh(2,3);
     
