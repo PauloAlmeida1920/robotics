@@ -17,14 +17,13 @@ disp(' ')
 
 syms theta1 theta2 theta3
 
-% Cumprimentos dos elos
-L1 = 4; L2 = 3; L3 = 2;
+% Offset/comprimentos dos elos (fixos)
+syms L1 L2 L3
+
 % Junta Rotacional ou Prismática
 R = 1; P = 0;
 
-
 % a) Matriz dos parâmetros de Denavith-Hartenberg: PJ_DH
-
 %____________________________________________________________________________________
 %          thetai  |  di  |  ai |  alfai | offseti | jointtypei
 %____________________________________________________________________________________      
@@ -38,8 +37,10 @@ PJ_DH = [  theta1      0     L1        0         0           R;   % Junta Rotaci
 %____________________________________________________________________________________
             
 % A cinemática directa até ao Gripper
-[ T0_G, Ti ] = MGD_DH(PJ_DH);  
+[ T0_G, Ti ] = MGD_DH(PJ_DH);
 
+% Offset/comprimentos dos elos (fixos)
+PJ_DH =  eval(subs(PJ_DH, [L1 L2 L3], [4 3 2]));
 
 % Criar Links Juntas Rotacionais -> o theta variável
 for i=1:4
@@ -61,13 +62,13 @@ q = [ deg2rad(0)  deg2rad(0)  deg2rad(0);
 % i) ii) iii)
 for i=1:3
     
-    T0_1 = eval(subs(Ti(:,:,1), q(i,1))); 
-    T1_2 = eval(subs(Ti(:,:,2), q(i,2))); 
-    T2_I = eval(subs(Ti(:,:,3), q(i,3))); 
-    TI_H = Ti(:,:,4);    
+    T0_1 = eval(subs(Ti(:,:,1), [L1 theta1], [4 q(i,1)])); 
+    T1_2 = eval(subs(Ti(:,:,2), [L2 theta2], [3 q(i,2)])); 
+    T2_I = eval(subs(Ti(:,:,3), theta3, q(i,3))); 
+    TI_H = eval(subs(Ti(:,:,4), L3, 2));    
    
     A0_2(:,:,i) = T0_1 * T1_2;
-    A0_H(:,:,i) = eval( T0_1 * T1_2 * T2_I * TI_H );
+    A0_H(:,:,i) = T0_1 * T1_2 * T2_I * TI_H;
     
     
     % c) Confirmação das Matrizes usando a robotics toolbox 
@@ -96,7 +97,7 @@ end
 % Confirmação usando a robotics toolbox
 for i=1:2
 
-    q_ikine(i,:) = robot.ikine(A0_H(:,:,i), 'mask', [1 1 0 1 0 1]); % [x y x roll pitch yaw] 
+    q_ikine(i,:) = robot.ikine(A0_H(:,:,i), 'mask', [1 1 0 1 0 1]); % [x y z roll pitch yaw] 
     
     % NOTA: Não está a funcionar para a junta 3...
 end
@@ -153,7 +154,6 @@ while(select ~= STOP)
         disp('A02:')
         disp(' ')
         disp(A0_2(:,:,i))
-        disp(' ')
         disp('c) Confirmação usando a toolbox Robotics:')
         disp(' ')
         disp(double(T02(:,:,i)))
@@ -162,7 +162,6 @@ while(select ~= STOP)
         disp('A0H:')
         disp(' ')
         disp(A0_H(:,:,i))
-        disp(' ')
         disp('c) Confirmação usando a toolbox Robotics:')
         disp(' ')
         disp(double(T0H(:,:,i)))
@@ -181,6 +180,7 @@ while(select ~= STOP)
                    'reach', 1,...
                    'scale', 1,...
                    'zoom', 0.25,...
+                   'jaxes', ...
                    'view',...
                    'top');
          
@@ -188,14 +188,16 @@ while(select ~= STOP)
     
     % Cinemática Inversa
     if select == 8
-        disp('d) e) Solução de Cinemática Inversa ')
+        close all;
+        disp('______________________________________________________________________')
         disp(' ')
-
-        disp('Matriz simbólica do Mundo ao Gripper: O T G')
+        disp('d) e) Solução de Cinemática Inversa ')
+        disp('______________________________________________________________________')
+        disp(' ')
+        disp('Gripper no Mundo: O T G')
         disp(' ')
         disp(T0_G)
-        disp(' ')
-        disp('Matriz simbólica do Mundo ao Braço: O T 2')
+        disp('Mundo ao Braço: O T 2')
         disp(' ')
         disp(T0_2)
         disp(' ')

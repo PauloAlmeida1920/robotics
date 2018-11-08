@@ -1,30 +1,76 @@
 
 %% Cinemática Inversa do Robô 1
 
-function q = inverse_kinematics_robot1(T)
+function q = inverse_kinematics_robot1(T0_G, Ti)
 
-    L1 = 0.25; 
+    % Offset/comprimentos dos elos (fixos)
+    L1 = 1; L2 = 1; L5 = 0.25;
+   
     
-    n = [0 0 0];
-    s = [0 0 0];
-    a = [0 0 0];
-    t = [0 0 0];
+    % Cinemática Inversa da Posição
+    
+    % vector a
+    ax = T0_G(1,3); ay = T0_G(2,3); az = T0_G(3,3); 
+    % vector t
+    ty = T0_G(2,4); tz = T0_G(3,4);
 
-    for i = 1:3
-        n(i) = T(i,1); %[nx, ny, nz]
-        s(i) = T(i,2); %[sx, sy, sz]
-        a(i) = T(i,3); %[ax, ay, az]
-        t(i) = T(i,4); %[tx, ty, tz]
-    end
+    d1 = tz - L5*az - L1;
+    d2 = ty - L5*ay - L2;
 
-    d1 = t(3) - a(3);
-    d2 = T(3) - L1*a(2); % t(2) - a(2);
+    
+    % Cinemática Inversa da Orientação 
+    
+    T0_1 = eval(subs(Ti(:,:,1), d1)); 
+    T1_2 = eval(subs(Ti(:,:,2), d2)); 
 
-    theta3 = atan2(-a(1),-a(3));
-    theta4 = atan2(-a(3)*cos(theta3)-a(1)*sin(theta3), a(2));
-    theta5 = atan2(-n(2), -s(2));
+    T0_2 = T0_1 * T1_2;
 
-    % parâmetros da cinemática inversa para o robot planar 1
+    T2_0 = inv(T0_2);
+
+    T2_G = T2_0 * T0_G;
+    
+%     % vector a
+%     ax = T2_G(1,3); ay = T2_G(2,3); az = T2_G(3,3);
+%     % vector s
+%     sz = T2_G(3,2);
+%     % vector n
+%     nz = T2_G(3,1);
+% 
+%     theta3 = atan2( ay, ax );
+%     theta4 = atan2( ax*cos(theta3) + ay*sin(theta3), az );
+%     theta5 = atan2( sz, -nz );
+
+    % vector s
+    sy = T0_G(2,2);
+    % vector n
+    ny = T0_G(2,1);
+
+    % Rui Batista - Funciona! Logo não é preciso passar as Ti's... 
+    theta3 = atan2(-ax,-az);
+    theta4 = atan2(-az*cos(theta3)-ax*sin(theta3), ay);
+    theta5 = atan2(-ny, -sy);
+    
+    % Valores das Juntas para o robô planar 1
     q = [d1 d2 theta3 theta4 theta5]; 
 
 end
+
+
+% % vector n
+% nx = T0_G(1,1); ny = T0_G(2,1); nz = T0_G(3,1);
+% % vector s
+% sx = T0_G(1,2); sy = T0_G(2,2); sz = T0_G(3,2);
+% % vector a
+% ax = T0_G(1,3); ay = T0_G(2,3); az = T0_G(3,3);
+% % vector t
+% tx = T0_G(1,4); ty = T0_G(2,4); tz = T0_G(3,4);
+
+
+
+
+
+
+
+
+
+

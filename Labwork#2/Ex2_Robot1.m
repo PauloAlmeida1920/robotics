@@ -19,7 +19,8 @@ disp('**************************** ROBOT1 ***********************************')
 
 syms d1 d2 theta3 theta4 theta5
 
-L1 = 0.25;
+% Offset/comprimentos dos elos (fixos)
+syms L1 L2 L5
 
 % Junta Rotacional ou Prismatica:
 R = 1; P = 0;
@@ -28,16 +29,22 @@ R = 1; P = 0;
 %____________________________________________________________________________________
 %          thetai  |  di  |  ai |  alfai | offseti | jointtypei
 %____________________________________________________________________________________
-PJ_DH = [       0     d1      0    -pi/2         0           P;    % Junta prismática
+PJ_DH = [       0     d1      0    -pi/2        L1           P;    % Junta prismática
 %____________________________________________________________________________________
-             pi/2     d2      0        0         0           P;    % Junta prismática
+            -pi/2     d2      0        0        L2           P;    % Junta prismática
 %____________________________________________________________________________________
-            theta3     0      0    -pi/2         0           R;    % Punho esferico
+           theta3      0      0    -pi/2         0           R;    % Punho esférico
 %____________________________________________________________________________________
-            theta4     0      0     pi/2         0           R;    % Punho esferico
+           theta4      0      0     pi/2         0           R;    % Punho esférico
 %____________________________________________________________________________________
-            theta5    L1      0        0     -pi/2           R ];  % Punho esferico
+           theta5     L5      0        0         0           R ];  % Punho esférico
 %____________________________________________________________________________________
+
+% A cinemática directa da base até ao Gripper: 
+[ T0_G, Ti ] = MGD_DH(PJ_DH);   
+
+% Offset/comprimentos dos elos (fixos)
+PJ_DH =  eval(subs(PJ_DH, [L1 L2 L5], [1 1 0.25]));
 
 
 %% INICIALIZAÇÃO DO ROBOT: CRIAR LINKS
@@ -68,34 +75,67 @@ robot = SerialLink(L, 'name', 'Robô Planar PPRRR');
 
 %% VARIÁVEIS GLOBAIS
 
-% Valores Juntas - "home"
-q = [1 1 0 0 0];
+%Valores Juntas "HOME"
+q_home = [0 0 0 0 0];
 
-%q = [0 0 0 0 0];
+% Valores Juntas aleatório
+q = [1 0.5 pi/4 pi/3 pi/6];
         
 
-%% a) e b) Confirmação dos dados
+%% a) Representação do Gripper no mundo e b) Confirmação dos dados
 
-% A cinemática directa da base   até ao Gripper: 
-[ T0_G, Ti ] = MGD_DH(PJ_DH);   
+T0_G_ =  eval(subs(T0_G, [L1 L2 L5], [1 1 0.25])); 
 
 % Matriz de transformação de O T G dados os valores das juntas do robô
-T0_G_values = eval(subs(T0_G, [d1 d2 theta3 theta4 theta5], q));
+T0_G_values = eval(subs(T0_G_, [d1 d2 theta3 theta4 theta5], q));
 
 % Confirmação da Matriz usando a robotics toolbox 
 T0_G_bytoolbox = robot.fkine(q);
 
 
-%% c) Modelo inverso dos Robots e confirmação usando a robotics toolbox 
+%% c) Modelo inverso dos Robots e d) confirmação usando a robotics toolbox 
 
-% Atenção: Correr secção a) e b) - depende de T0_G_values
+% Atenção: Correr secção a) e b) - depende de T0_G_values e Ti
+
+syms nx ny nz sx sy sz ax ay az tx ty tz
+
+T0_G_nsat = [ nx sx ax tx;
+              ny sy ay ty;
+              nz sz az tz;
+               0  0  0  1 ];
+
+% Cinemática Inversa da Posição:
+t = T0_G(1:3,4);
+
+
+% Cinemática Inversa da Orientação: 
+
+% Auxiliar Mundo ao Braço: O T 2
+T0_1 = Ti(:,:,1);
+T1_2 = Ti(:,:,2);
+
+T0_2 = simplify( T0_1 * T1_2 );
+
+T2_0 = inv(T0_2);
+
+% Auxiliar Elo 2 ao Gripper: 2 T G
+T2_G = T2_0 * T0_G;
+
+% Simplificando: De forma a usar os valores dados em O T G
+% Previamente determinado/conhecendo d1 e d2 (L1 L2 são constantes)
+
+T2_G_nsat = T2_0 * T0_G_nsat
+
 
 % Juntas do Robô dadas pela Cinemática Inversa do robot
-q_byinv = inverse_kinematics_robot1(T0_G_values);
+q_byinv = inverse_kinematics_robot1(T0_G_values, Ti);
 
 
 % Confirmação usando a robotics toolbox 
-q_bytoolbox = robot.ikine(T0_G_values, 'mask', [0 1 1 1 1 1]); % [x y x roll pitch yaw] 
+q_bytoolbox = robot.ikine(T0_G_values, 'mask', [0 1 1 1 1 1]); % [x y z roll pitch yaw] 
+
+
+% NOTA: p/ valores 0, pi/2 e pi a função atan2 é limitada no cálculos dos valores das juntas
 
 
 
@@ -133,49 +173,70 @@ while (select ~= sair)
                                                     'c) & d) Cinemática Inversa',...
                                                     'Sair');
                                                 
-    % a) & b) Representação grafica dos robots c/ o punho esférico
+    % a) e b) Representação grafica dos robots c/ o punho esférico
     if select == 1
         
         figure('units','normalized','outerposition',[0 0 1 1]);
         % Prespectiva de lado do Robot  
-        robot.teach(q, 'workspace', [-2 2 -2 2 -1 2], 'reach', ... 
-                       1, 'scale', 1, 'zoom', 1);
+        robot.teach(q_home, 'workspace', [-3 3 -3 3 -1 3], 'reach', 1,... 
+                            'scale', 1, 'zoom', 0.65, 'jaxes'); 
+                    % 'jaxes' - eixos
+                    % 'jvec' - eixos c/ seta (vector)
     end
     
     % a) e b) Confirmação dos dados
-    if select == 2     
-        disp('Matriz de transformação para cinematica Directa obtida com MGD_DH() c/ variaveis simbolicas:')
-        disp('____________________________________________________________________________________')
-        T0_H = simplify(T0_H);
-        disp(T0_H)
-        disp('____________________________________________________________________________________')
-
+    if select == 2
+        disp('______________________________________________________________________')
         disp(' ')
-        disp('Matriz transformação obtida com MGD_DH() e com os valores atribuidos em q[]')
-        disp('____________________________________________________________________________________')
-        disp(T0_H_values)
-        disp('____________________________________________________________________________________')
-
+        disp('Matriz transformação obtida com MGD_DH() através dos valores atribuidos em q[]')
+        disp('______________________________________________________________________')
         disp(' ')
-        disp('Matriz de transformação obtida com a toolbox e com os valores artribuidos em q[]')
-        disp('____________________________________________________________________________________')
-        disp(T0_H_Toolbox)
-        disp('____________________________________________________________________________________')
-
-        if(abs((T0_H_values - T0_H_Toolbox)) < 1e-15)
-            disp('Os valores obtidos são coincidentes com os obtidos a partir da toolbox');
-        else
-            disp('As matrizes não coincidem!');
-        end
+        disp('O T G:')
+        disp(' ')
+        disp(T0_G_values)
+        disp('c) Confirmação usando a toolbox Robotics:')
+        disp(' ')
+        disp(T0_G_bytoolbox)
+        disp('______________________________________________________________________')
     end
     
     % c) Modelo inverso dos Robots
     if select == 3
-        if(abs((T0_H_values_inv - T0_H_Toolbox_inv)) < 1e-15)
-            disp('Os valores obtidos são coincidentes com os obtidos a partir da toolbox');
-        else
-            disp('As matrizes não coincidem!');
-        end
+        disp('______________________________________________________________________')
+        disp(' ')
+        disp('d) Solução de Cinemática Inversa')
+        disp('______________________________________________________________________')
+        disp(' ')
+        disp('Gripper no Mundo: O T G')
+        disp(' ')
+        disp(T0_G)
+        disp('Auxiliar à Cinemática Inversa do Braço - Mundo ao Braço: O T 2')
+        disp(' ')
+        disp(T0_2)
+        disp('Auxiliar à Cinemática Inversa do Punho Esférico - Elo 2 ao Gripper: 2 T G')
+        disp(' ')
+        disp(T2_G)
+        
+        disp('______________________________________________________________________')  
+        disp(' ')
+        disp('Valores das Juntas do robô usando o modelo da cinemática inversa')
+        disp('______________________________________________________________________')
+        disp(' ')
+        disp(['q = [ ' num2str(q(1)) 'm ' ...
+                          num2str(q(2)) 'm ' ...
+                          num2str(rad2deg(q(3))) 'º ' ...
+                          num2str(rad2deg(q(4))) 'º ' ...
+                          num2str(rad2deg(q(5))) 'º ]'])
+        disp(' ')              
+        disp('c) Confirmação usando a toolbox Robotics:')
+        disp(' ')
+        disp(['q = [ ' num2str(q_bytoolbox(1)) 'm ' ...
+                       num2str(q_bytoolbox(2)) 'm ' ...
+                       num2str(rad2deg(q_bytoolbox(3))) 'º ' ...
+                       num2str(rad2deg(q_bytoolbox(4))) 'º ' ...
+                       num2str(rad2deg(q_bytoolbox(5))) 'º ]'])
+        disp(' ')
+        disp('______________________________________________________________________')  
     end
     
     % clear workspace
