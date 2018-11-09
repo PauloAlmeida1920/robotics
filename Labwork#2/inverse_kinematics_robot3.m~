@@ -1,7 +1,7 @@
 
 %% Cinemática Inversa do Robô 2
 
-function q = inverse_kinematics_robot2(T0_G)
+function q = inverse_kinematics_robot3(T0_G)
 
     % Offset/comprimentos dos elos (fixos)
     L1 = 1; L2 = 0.5; L5 = 0.25;
@@ -13,21 +13,21 @@ function q = inverse_kinematics_robot2(T0_G)
     
     
     % Cinemática Inversa do Braço:
- 
-    d2 = sqrt( (tx - L5*ax)^2 + (ty - L5*ay)^2 - L1^2) - L2;
     
-    theta1 = atan2(ty - L5*ay, tx - L5*ax) - atan2(L1, d2);
+    theta1 = atan2(tx - L4*ax, -(ty - L4*ay));
+    
+    d2 = (tx - L4*ax) * sin(theta1) - cos(theta1) - l1; - L2;
     
     
     % Cinemática Inversa do Punho Esférico:
     
-    theta3 = atan2(-ax, -az);
-    theta4 = atan2(-az*cos(theta3) - ax*sin(theta3), ay);
-    theta5 = atan2(-ny, -sy);
+    theta4 = atan2(-ax,-az);
+    theta5 = atan2(-az*cos(theta3)-ax*sin(theta3), ay);
+    theta6 = atan2(-ny, -sy);
     
     
     % Valores das Juntas para o robô planar 1
-    q = [theta1 d2 theta3 theta4 theta5]; 
+    q = [theta1 d2 theta3 theta4 theta5 theta6]; 
 
 end
 

@@ -15,12 +15,12 @@ disp(' ')
 
 %% Problema 2 - Obtenha os parametros de D-H dos 3 manipuladores
 
-disp('**************************** ROBOT1 ***********************************')
+disp('**************************** ROBOT2 ***********************************')
 
-syms d1 d2 theta3 theta4 theta5
+syms theta1 d2 theta3 theta4 theta5 theta6
 
 % Offset/comprimentos dos elos (fixos)
-syms L1 L2 L5
+syms L2 L4 L5
 
 % Junta Rotacional ou Prismatica:
 R = 1; P = 0;
@@ -29,22 +29,24 @@ R = 1; P = 0;
 %____________________________________________________________________________________
 %          thetai  |  di  |  ai |  alfai | offseti | jointtypei
 %____________________________________________________________________________________
-PJ_DH = [       0     d1      0    -pi/2        L1           P;    % Junta prismática
+PJ_DH = [  theta1      0      0     pi/2         0           R;    % Junta prismática
 %____________________________________________________________________________________
-            -pi/2     d2      0        0        L2           P;    % Junta rotacional
+                0     d2      0    -pi/2        L2           P;    % Junta prismática
 %____________________________________________________________________________________
-           theta3      0      0    -pi/2         0           R;    % Punho esférico
+           theta3      0      0     pi/2         0           R;    % Punho esférico
 %____________________________________________________________________________________
-           theta4      0      0     pi/2         0           R;    % Punho esférico
+           theta4     L4      0    -pi/2         0           R;    % Punho esférico
 %____________________________________________________________________________________
-           theta5     L5      0        0         0           R ];  % Punho esférico
+           theta5      0      0     pi/2         0           R;    % Punho esférico
+%____________________________________________________________________________________
+           theta6     L5      0        0         0           R ];  % Punho esférico
 %____________________________________________________________________________________
 
 % A cinemática directa da base até ao Gripper: 
 [ T0_G, Ti ] = MGD_DH(PJ_DH);   
 
 % Offset/comprimentos dos elos (fixos)
-PJ_DH =  eval(subs(PJ_DH, [L1 L2 L5], [1 1 0.25]));
+PJ_DH =  eval(subs(PJ_DH, [L2 L4 L5], [1 1 0.25]));
 
 
 %% INICIALIZAÇÃO DO ROBOT: CRIAR LINKS
@@ -76,19 +78,18 @@ robot = SerialLink(L, 'name', 'Robô Planar PPRRR');
 %% VARIÁVEIS GLOBAIS
 
 %Valores Juntas "HOME"
-q_home = [0 0 0 0 0];
+q_home = [0 0 0 0 0 0];
 
 % Valores Juntas aleatório
-% q = [1 0.5 pi/4 pi/3 pi/6];
-q = [1 0.5 deg2rad(45) deg2rad(60) deg2rad(30)];
+q = [deg2rad(45) 1 deg2rad(45) deg2rad(35) deg2rad(25) deg2rad(15)];
 
 
 %% a) Representação do Gripper no mundo e b) Confirmação dos dados
 
-T0_G_ =  eval(subs(T0_G, [L1 L2 L5], [1 1 0.25])); 
+T0_G_ =  eval(subs(T0_G, [L2 L4 L5], [1 1 0.25])); 
 
 % Matriz de transformação de O T G dados os valores das juntas do robô
-T0_G_values = eval(subs(T0_G_, [d1 d2 theta3 theta4 theta5], q));
+T0_G_values = eval(subs(T0_G_, [theta1 d2 theta3 theta4 theta5 theta6], q));
 
 % Confirmação da Matriz usando a robotics toolbox 
 T0_G_bytoolbox = robot.fkine(q);
@@ -108,26 +109,26 @@ T0_G_nsat = [ nx sx ax tx;
 
 % Cinemática Inversa do Braço:
 
-t = T0_G(1:3,4); % Colocar no MENU output
+t = T0_G(1:3,4) % Colocar no MENU output
+
+
+% Cinemática Inversa do Punho Esférico:
 
 % Auxiliar Mundo ao Braço: O T 2
 T0_1 = Ti(:,:,1);
 T1_2 = Ti(:,:,2);
 
-T0_2 = simplify( T0_1 * T1_2 );
-
-
-% Cinemática Inversa do Punho Esférico:
+T0_2 = simplify( T0_1 * T1_2 )
 
 T2_0 = inv(T0_2);
 
 % Auxiliar Elo 2 ao Gripper: 2 T G
-T2_G = T2_0 * T0_G;
+T2_G = T2_0 * T0_G
 
 % Simplificando: De forma a usar os valores dados em O T G
 % Previamente determinado/conhecendo d1 e d2 (L1 L2 são constantes)
 
-T2_G_nsat = T2_0 * T0_G_nsat; % Colocar no MENU output
+T2_G_nsat = T2_0 * T0_G_nsat % Colocar no MENU output
 
 
 % Juntas do Robô dadas pela Cinemática Inversa do robot
@@ -135,8 +136,9 @@ q_byinv = inverse_kinematics_robot1(T0_G_values);
 
 
 % Confirmação usando a robotics toolbox 
-q_bytoolbox = robot.ikine(T0_G_values, 'mask', [0 1 1 1 1 1]); % [x y z roll pitch yaw] 
+q_bytoolbox = robot.ikine(T0_G_values, 'mask', [1 1 1 1 1 1]); % [x y z roll pitch yaw] 
 
+T0_G_q_bytoolbox = robot.fkine(q_bytoolbox);
 
 
 %% MENU ("main")
@@ -176,11 +178,11 @@ while (select ~= sair)
     % a) e b) Representação grafica dos robots c/ o punho esférico
     if select == 1
         close all;
-        
+       
         figure('units','normalized','outerposition',[0 0 1 1]);
         % Prespectiva de lado do Robot  
-        robot.teach(q_home, 'workspace', [-3 3 -3 3 -1 3], 'reach', 1,... 
-                            'scale', 1, 'zoom', 0.65, 'jaxes'); 
+        robot.teach(q_home, 'workspace', [-4 4 -4 4 -1 1], 'reach', 1,... 
+                            'scale', 1, 'zoom', 0.65, 'jaxes');                  
     end
     
     % a) e b) Confirmação dos dados
@@ -223,20 +225,34 @@ while (select ~= sair)
         disp('Valores das Juntas do robô usando o modelo da cinemática inversa')
         disp('______________________________________________________________________')
         disp(' ')
-        disp(['q = [ ' num2str(q(1)) 'm ' ...
+        disp(['q = [ ' num2str(rad2deg(q(1))) 'º ' ...
                        num2str(q(2)) 'm ' ...
                        num2str(rad2deg(q(3))) 'º ' ...
                        num2str(rad2deg(q(4))) 'º ' ...
-                       num2str(rad2deg(q(5))) 'º ]'])
+                       num2str(rad2deg(q(5))) 'º ' ...
+                       num2str(rad2deg(q(6))) 'º ]'])
         disp(' ')              
         disp('c) Confirmação usando a toolbox Robotics:')
         disp(' ')
-        disp(['q = [ ' num2str(q_bytoolbox(1)) 'm ' ...
+        disp(['q = [ ' num2str(rad2deg(q_bytoolbox(1))) 'º ' ...
                        num2str(q_bytoolbox(2)) 'm ' ...
                        num2str(rad2deg(q_bytoolbox(3))) 'º ' ...
                        num2str(rad2deg(q_bytoolbox(4))) 'º ' ...
-                       num2str(rad2deg(q_bytoolbox(5))) 'º ]'])
+                       num2str(rad2deg(q_bytoolbox(5))) 'º ' ...
+                       num2str(rad2deg(q_bytoolbox(6))) 'º ]'])
         disp(' ')
+        disp('Os valores das juntas pela ikine dão diferentes.')
+        disp('Existindo mutiplas soluções a aproximação pela ikine é mais dificil.')
+        disp('Usando as juntas dadas dadas pela ikine e determinando a O T G pela função fkine.')
+        disp('Verifica-se que o output da fkine é igual a dada por MGD_DH:')
+        disp(' ')
+        disp('O T G by ikine:')
+        disp(' ')
+        disp(T0_G_q_bytoolbox)
+        disp(' ')
+        disp('O T G by MGD_DH:')
+        disp(' ')
+        disp(T0_G_values)
         disp('______________________________________________________________________')  
     end
     

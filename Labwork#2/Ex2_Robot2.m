@@ -31,13 +31,13 @@ R = 1; P = 0;
 %____________________________________________________________________________________
 PJ_DH = [  theta1      0     L1     pi/2         0           R;    % Junta prismática
 %____________________________________________________________________________________
-                0     d2      0        0        L2           P;    % Junta prismática
+                0     d2      0        0        L2           P;    % Junta rotacional
 %____________________________________________________________________________________
-           theta3      0      0    -pi/2         0           R;    % Punho esf�rico
+           theta3      0      0    -pi/2         0           R;    % Punho esférico
 %____________________________________________________________________________________
-           theta4      0      0     pi/2         0           R;    % Punho esf�rico
+           theta4      0      0     pi/2         0           R;    % Punho esférico
 %____________________________________________________________________________________
-           theta5     L5      0        0         0           R ];  % Punho esf�rico
+           theta5     L5      0        0         0           R ];  % Punho esférico
 %____________________________________________________________________________________
 
 % A cinemática directa da base até ao Gripper: 
@@ -174,22 +174,17 @@ while (select ~= sair)
                                                 
     % a) e b) Representação grafica dos robots c/ o punho esférico
     if select == 1
-        
+        close all;
+       
         figure('units','normalized','outerposition',[0 0 1 1]);
         % Prespectiva de lado do Robot  
         robot.teach(q_home, 'workspace', [-3 3 -3 3 -1 3], 'reach', 1,... 
-                            'scale', 1, 'zoom', 0.65, 'jaxes'); 
-                    % 'jaxes' - eixos
-                    % 'jvec' - eixos c/ seta (vector)
-                    
-%         cameratoolbar('Show')
-%         cameratoolbar('SetMode', 'orbit')
-%         cameratoolbar('SetCoordSys', 'y')
-%         view(0,90);            
+                            'scale', 1, 'zoom', 0.65, 'jaxes');                  
     end
     
     % a) e b) Confirmação dos dados
     if select == 2
+        close all;
         disp('______________________________________________________________________')
         disp(' ')
         disp('Matriz transformação obtida com MGD_DH() através dos valores atribuidos em q[]')
@@ -206,6 +201,7 @@ while (select ~= sair)
     
     % c) Modelo inverso dos Robots
     if select == 3
+        close all;
         disp('______________________________________________________________________')
         disp(' ')
         disp('d) Solução de Cinemática Inversa')
