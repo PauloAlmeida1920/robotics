@@ -79,8 +79,9 @@ robot = SerialLink(L, 'name', 'Robô Planar PPRRR');
 q_home = [0 0 0 0 0];
 
 % Valores Juntas aleatório
-q = [1 0.5 pi/4 pi/3 pi/6];
-        
+% q = [1 0.5 pi/4 pi/3 pi/6];
+q = [1 0.5 deg2rad(45) deg2rad(60) deg2rad(30)];
+
 
 %% a) Representação do Gripper no mundo e b) Confirmação dos dados
 
@@ -91,6 +92,7 @@ T0_G_values = eval(subs(T0_G_, [d1 d2 theta3 theta4 theta5], q));
 
 % Confirmação da Matriz usando a robotics toolbox 
 T0_G_bytoolbox = robot.fkine(q);
+
 
 
 %% c) Modelo inverso dos Robots e d) confirmação usando a robotics toolbox 
@@ -104,17 +106,18 @@ T0_G_nsat = [ nx sx ax tx;
               nz sz az tz;
                0  0  0  1 ];
 
-% Cinemática Inversa da Posição:
+% Cinemática Inversa do Braço:
+
 t = T0_G(1:3,4); % Colocar no MENU output
-
-
-% Cinemática Inversa da Orientação: 
 
 % Auxiliar Mundo ao Braço: O T 2
 T0_1 = Ti(:,:,1);
 T1_2 = Ti(:,:,2);
 
 T0_2 = simplify( T0_1 * T1_2 );
+
+
+% Cinemática Inversa do Punho Esférico:
 
 T2_0 = inv(T0_2);
 
@@ -128,7 +131,7 @@ T2_G_nsat = T2_0 * T0_G_nsat; % Colocar no MENU output
 
 
 % Juntas do Robô dadas pela Cinemática Inversa do robot
-q_byinv = inverse_kinematics_robot1(T0_G_values, Ti);
+q_byinv = inverse_kinematics_robot1(T0_G_values);
 
 
 % Confirmação usando a robotics toolbox 
@@ -223,10 +226,10 @@ while (select ~= sair)
         disp('______________________________________________________________________')
         disp(' ')
         disp(['q = [ ' num2str(q(1)) 'm ' ...
-                          num2str(q(2)) 'm ' ...
-                          num2str(rad2deg(q(3))) 'º ' ...
-                          num2str(rad2deg(q(4))) 'º ' ...
-                          num2str(rad2deg(q(5))) 'º ]'])
+                       num2str(q(2)) 'm ' ...
+                       num2str(rad2deg(q(3))) 'º ' ...
+                       num2str(rad2deg(q(4))) 'º ' ...
+                       num2str(rad2deg(q(5))) 'º ]'])
         disp(' ')              
         disp('c) Confirmação usando a toolbox Robotics:')
         disp(' ')
