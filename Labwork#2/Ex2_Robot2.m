@@ -2,7 +2,7 @@ clear all
 close all
 clc
 
-format short 
+format short
 
 disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
 disp('%%    [Robótica - 23/10/2018 ~ 11/11/2018] LABWORK#2 - PROBLEMA 2    %%')
@@ -29,7 +29,7 @@ R = 1; P = 0;
 %____________________________________________________________________________________
 %          thetai  |  di  |  ai |  alfai | offseti | jointtypei
 %____________________________________________________________________________________
-PJ_DH = [  theta1      0     L1     pi/2         0           R;    % Junta prismática
+PJ_DH = [  theta1      0     L1    -pi/2     -pi/2           R;    % Junta prismática
 %____________________________________________________________________________________
                 0     d2      0        0        L2           P;    % Junta rotacional
 %____________________________________________________________________________________
@@ -40,8 +40,8 @@ PJ_DH = [  theta1      0     L1     pi/2         0           R;    % Junta prism
            theta5     L5      0        0         0           R ];  % Punho esférico
 %____________________________________________________________________________________
 
-% A cinemática directa da base até ao Gripper: 
-[ T0_G, Ti ] = MGD_DH(PJ_DH);   
+% A cinemática directa da base até ao Gripper:
+[ T0_G, Ti ] = MGD_DH(PJ_DH);
 
 % Offset/comprimentos dos elos (fixos)
 PJ_DH =  eval(subs(PJ_DH, [L1 L2 L5], [1 0.5 0.25]));
@@ -50,17 +50,17 @@ PJ_DH =  eval(subs(PJ_DH, [L1 L2 L5], [1 0.5 0.25]));
 %% INICIALIZAÇÃO DO ROBOT: CRIAR LINKS
 
 for i = 1 : size(PJ_DH,1)
-    
+
     if PJ_DH(i,6) == R              % Juntas Rotacionais
-        
+
         L(i) = Link('d',eval(PJ_DH(i,2)),...
                     'a', eval(PJ_DH(i,3)),...
                     'alpha', eval(PJ_DH(i,4)),...
                     'offset', eval(PJ_DH(i,5)));
     end
-    
+
     if PJ_DH(i,6) == P              % Junta Prismática
-        
+
         L(i) = Link('theta',eval(PJ_DH(i,1)),...
                     'a', eval(PJ_DH(i,3)),...
                     'alpha', eval(PJ_DH(i,4)),...
@@ -84,17 +84,17 @@ q = [deg2rad(35) 1 deg2rad(15) deg2rad(50) deg2rad(20)];
 
 %% a) Representação do Gripper no mundo e b) Confirmação dos dados
 
-T0_G_ =  eval(subs(T0_G, [L1 L2 L5], [1 0.5 0.25])); 
+T0_G_ =  eval(subs(T0_G, [L1 L2 L5], [1 0.5 0.25]));
 
 % Matriz de transformação de O T G dados os valores das juntas do robô
 T0_G_values = eval(subs(T0_G_, [theta1 d2 theta3 theta4 theta5], q));
 
-% Confirmação da Matriz usando a robotics toolbox 
+% Confirmação da Matriz usando a robotics toolbox
 T0_G_bytoolbox = robot.fkine(q);
 
 
 
-%% c) Modelo inverso dos Robots e d) confirmação usando a robotics toolbox 
+%% c) Modelo inverso dos Robots e d) confirmação usando a robotics toolbox
 
 % Atenção: Correr secção a) e b) - depende de T0_G_values e Ti
 
@@ -108,7 +108,7 @@ T0_G_nsat = [ nx sx ax tx;
 % Cinemática Inversa das juntas do Braço: d1 e d2
 syms d2 d1
 
-ty_ = T0_G(2,4); 
+ty_ = T0_G(2,4);
 tz_ = T0_G(3,4);
 % Auxiliar
 d2 = ty + (-ty_ + d2);
@@ -123,20 +123,20 @@ T1_2 = Ti(:,:,2);
 
 T0_2 = simplify( T0_1 * T1_2 );
 
-T2_0 = inv(T0_2);
+T2_0 = simplify( inv(T0_2) );
 
 % Matriz Simbólica 2 T G: De forma a conhecer que valores usar dados em O T G
-T2_G_nsat = T2_0 * T0_G_nsat; 
+T2_G_nsat = simplify( T2_0 * T0_G_nsat );
 
-% Resultado - Gripper no Elo 2 -> 2 T G: 
-T2_G = T2_0 * T0_G;
+% Resultado - Gripper no Elo 2 -> 2 T G:
+T2_G = simplify(  T2_0 * T0_G );
 
 
 % Juntas do Robô dadas pela Cinemática Inversa do robot
 q_byinv = inverse_kinematics_robot1(T0_G_values);
 
-% Confirmação usando a robotics toolbox 
-q_bytoolbox = robot.ikine(T0_G_values, 'mask', [0 1 1 1 1 1]); % [x y z roll pitch yaw] 
+% Confirmação usando a robotics toolbox
+q_bytoolbox = robot.ikine(T0_G_values, 'mask', [0 1 1 1 1 1]); % [x y z roll pitch yaw]
 
 
 
@@ -147,7 +147,7 @@ first = 0;
 sair = 4;
 
 while (select ~= sair)
-    
+
     % Matriz dos parâmetros de Denavith-Hartenberg: PJ_DH e a O T G
     if first < 1
         disp('______________________________________________________________________')
@@ -160,22 +160,22 @@ while (select ~= sair)
 
         first = first + 1;
     end
-    
+
     select = menu('Seleccione a acção a realizar:', 'a) & b) Plot do Robô',...
                                                     'a) & b) Confirmação',...
                                                     'c) & d) Cinemática Inversa',...
                                                     'Sair');
-                                                
+
     % a) e b) Representação grafica dos robots c/ o punho esférico
     if select == 1
         close all;
-       
+
         figure('units','normalized','outerposition',[0 0 1 1]);
-        % Prespectiva de lado do Robot  
-        robot.teach(q_home, 'workspace', [-3 3 -3 3 -1 3], 'reach', 1,... 
-                            'scale', 1, 'zoom', 0.65, 'jaxes');                  
+        % Prespectiva de lado do Robot
+        robot.teach(q_home, 'workspace', [-3 3 -3 3 -1 3], 'reach', 1,...
+                            'scale', 1, 'zoom', 0.65, 'jaxes');
     end
-    
+
     % a) e b) Confirmação dos dados
     if select == 2
         close all;
@@ -192,7 +192,7 @@ while (select ~= sair)
         disp(T0_G_bytoolbox)
         disp('______________________________________________________________________')
     end
-    
+
     % c) Modelo inverso dos Robots
     if select == 3
         close all;
@@ -201,17 +201,34 @@ while (select ~= sair)
         disp('d) Solução de Cinemática Inversa')
         disp('______________________________________________________________________')
         disp(' ')
-        disp('Gripper na Base: O T G')
+        disp('Matriz Simbólica -> O T G:')
+        disp(' ')
+        disp(T0_G_nsat)
+        disp('Gripper na Base -> O T G:')
         disp(' ')
         disp(T0_G)
-        disp('Base ao Braço: O T 2')
+
+        disp('______________________________________________________________________')
+        disp('Cinemática Inversa das juntas do Braço: d1 e d2')
         disp(' ')
-        disp(T0_2)
-        disp('Elo 2 ao Gripper: 2 T G')
+        fprintf('ty = %s <=> d2 =  %s \n', ty_, d2);
+        fprintf('tz = %s <=> d1 =  %s \n', tz_, d1);
+        disp(' ')
+
+        disp('______________________________________________________________________')
+        disp('Cinemática Inversa das juntas do Punho Esférico: theta3 theta4 theta 5')
+        disp(' ')
+        disp('Base ao Elo 2 -> 2 T 0:')
+        disp(' ')
+        disp(T2_0)
+        disp('Matriz Simbólica - Gripper no Elo 2 -> 2 T G:')
+        disp(' ')
+        disp(T2_G_nsat)
+        disp('Resultado - Gripper no Elo 2 -> 2 T G:')
         disp(' ')
         disp(T2_G)
-        
-        disp('______________________________________________________________________')  
+
+        disp('______________________________________________________________________')
         disp(' ')
         disp('Valores das Juntas do robô usando o modelo da cinemática inversa')
         disp('______________________________________________________________________')
@@ -221,7 +238,7 @@ while (select ~= sair)
                        num2str(rad2deg(q_byinv(3))) 'º ' ...
                        num2str(rad2deg(q_byinv(4))) 'º ' ...
                        num2str(rad2deg(q_byinv(5))) 'º ]'])
-        disp(' ')              
+        disp(' ')
         disp('c) Confirmação usando a toolbox Robotics:')
         disp(' ')
         disp(['q = [ ' num2str(rad2deg(q_bytoolbox(1))) 'º ' ...
@@ -230,12 +247,12 @@ while (select ~= sair)
                        num2str(rad2deg(q_bytoolbox(4))) 'º ' ...
                        num2str(rad2deg(q_bytoolbox(5))) 'º ]'])
         disp(' ')
-        disp('______________________________________________________________________')  
+        disp('______________________________________________________________________')
     end
-    
+
     % clear workspace
     if select == sair
-       close all; 
+       close all;
     end
-    
+
 end     %fim do menu
