@@ -31,7 +31,7 @@ R = 1; P = 0;
 %____________________________________________________________________________________
 PJ_DH = [       0     d1      0    -pi/2        L1           P;    % Junta prismática
 %____________________________________________________________________________________
-            -pi/2     d2      0        0        L2           P;    % Junta rotacional
+             pi/2     d2      0        0        L2           P;    % Junta rotacional
 %____________________________________________________________________________________
            theta3      0      0    -pi/2         0           R;    % Punho esférico
 %____________________________________________________________________________________
@@ -106,9 +106,10 @@ T0_G_nsat = [ nx sx ax tx;
               nz sz az tz;
                0  0  0  1 ];
 
-% Cinemática Inversa do Braço:
+% Cinemática Inversa das juntas do Braço:
 
-t = T0_G(1:3,4); % Colocar no MENU output
+ty = T0_G(2,4); % Colocar no MENU output
+tz = T0_G(2,4);
 
 % Auxiliar Mundo ao Braço: O T 2
 T0_1 = Ti(:,:,1);
@@ -117,7 +118,7 @@ T1_2 = Ti(:,:,2);
 T0_2 = simplify( T0_1 * T1_2 );
 
 
-% Cinemática Inversa do Punho Esférico:
+% Cinemática Inversa das juntas do Punho Esférico:
 
 T2_0 = inv(T0_2);
 
@@ -155,16 +156,8 @@ while (select ~= sair)
         disp('______________________________________________________________________')
         disp(' ')
         robot.display
-        disp(' ')
         disp('______________________________________________________________________')
-        disp(' ')
-        disp('a) Cinemática Directa: O T G')
-        disp('______________________________________________________________________')
-        disp(' ')
-        disp(T0_G)
-        disp(' ')
-        disp('______________________________________________________________________')
-        
+
         first = first + 1;
     end
     

@@ -107,12 +107,12 @@ T0_G_nsat = [ nx sx ax tx;
               nz sz az tz;
                0  0  0  1 ];
 
-% Cinemática Inversa do Braço:
+% Cinemática Inversa das juntas do Braço:
 
 t = T0_G(1:3,4) % Colocar no MENU output
 
 
-% Cinemática Inversa do Punho Esférico:
+% Cinemática Inversa das juntas do Punho Esférico:
 
 % Auxiliar Mundo ao Braço: O T 2
 T0_1 = Ti(:,:,1);
@@ -157,14 +157,6 @@ while (select ~= sair)
         disp('______________________________________________________________________')
         disp(' ')
         robot.display
-        disp(' ')
-        disp('______________________________________________________________________')
-        disp(' ')
-        disp('a) Cinemática Directa: O T G')
-        disp('______________________________________________________________________')
-        disp(' ')
-        disp(T0_G)
-        disp(' ')
         disp('______________________________________________________________________')
         
         first = first + 1;
