@@ -105,33 +105,35 @@ T0_G_nsat = [ nx sx ax tx;
               nz sz az tz;
                0  0  0  1 ];
 
-% Cinemática Inversa das juntas do Braço:
+% Cinemática Inversa das juntas do Braço: d1 e d2
+syms d2 d1
 
-t = T0_G(1:3,4) % Colocar no MENU output
+ty_ = T0_G(2,4); 
+tz_ = T0_G(3,4);
+% Auxiliar
+d2 = ty + (-ty_ + d2);
+d1 = tz + (-tz_ + d1);
 
 
-% Cinemática Inversa das juntas do Punho Esférico:
+% Cinemática Inversa das juntas do Punho Esférico: theta3 theta4 theta 5
 
-% Auxiliar Mundo ao Braço: O T 2
+% Auxiliar Base ao Braço -> 2 T 0:
 T0_1 = Ti(:,:,1);
 T1_2 = Ti(:,:,2);
 
-T0_2 = simplify( T0_1 * T1_2 )
+T0_2 = simplify( T0_1 * T1_2 );
 
 T2_0 = inv(T0_2);
 
-% Auxiliar Elo 2 ao Gripper: 2 T G
-T2_G = T2_0 * T0_G
+% Matriz Simbólica 2 T G: De forma a conhecer que valores usar dados em O T G
+T2_G_nsat = T2_0 * T0_G_nsat; 
 
-% Simplificando: De forma a usar os valores dados em O T G
-% Previamente determinado/conhecendo d1 e d2 (L1 L2 são constantes)
-
-T2_G_nsat = T2_0 * T0_G_nsat % Colocar no MENU output
+% Resultado - Gripper no Elo 2 -> 2 T G: 
+T2_G = T2_0 * T0_G;
 
 
 % Juntas do Robô dadas pela Cinemática Inversa do robot
 q_byinv = inverse_kinematics_robot1(T0_G_values);
-
 
 % Confirmação usando a robotics toolbox 
 q_bytoolbox = robot.ikine(T0_G_values, 'mask', [0 1 1 1 1 1]); % [x y z roll pitch yaw] 
@@ -199,10 +201,10 @@ while (select ~= sair)
         disp('d) Solução de Cinemática Inversa')
         disp('______________________________________________________________________')
         disp(' ')
-        disp('Gripper no Mundo: O T G')
+        disp('Gripper na Base: O T G')
         disp(' ')
         disp(T0_G)
-        disp('Mundo ao Braço: O T 2')
+        disp('Base ao Braço: O T 2')
         disp(' ')
         disp(T0_2)
         disp('Elo 2 ao Gripper: 2 T G')
@@ -214,11 +216,11 @@ while (select ~= sair)
         disp('Valores das Juntas do robô usando o modelo da cinemática inversa')
         disp('______________________________________________________________________')
         disp(' ')
-        disp(['q = [ ' num2str(rad2deg(q(1))) 'º ' ...
-                       num2str(q(2)) 'm ' ...
-                       num2str(rad2deg(q(3))) 'º ' ...
-                       num2str(rad2deg(q(4))) 'º ' ...
-                       num2str(rad2deg(q(5))) 'º ]'])
+        disp(['q = [ ' num2str(rad2deg(q_byinv(1))) 'º ' ...
+                       num2str(q_byinv(2)) 'm ' ...
+                       num2str(rad2deg(q_byinv(3))) 'º ' ...
+                       num2str(rad2deg(q_byinv(4))) 'º ' ...
+                       num2str(rad2deg(q_byinv(5))) 'º ]'])
         disp(' ')              
         disp('c) Confirmação usando a toolbox Robotics:')
         disp(' ')

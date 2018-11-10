@@ -16,17 +16,17 @@ function q = inverse_kinematics_robot1(T0_G)
     ty = T0_G(2,4); tz = T0_G(3,4);
     
     
-    % Cinemática Inversa do Braço:
+    % Cinemática Inversa das juntas do Braço: d1 e d2
     
     d1 = tz - L5*az - L1;
     d2 = ty - L5*ay - L2;
 
     
-    % Cinemática Inversa do Punho Esférico
+    % Cinemática Inversa das juntas do Punho Esférico: theta3 theta4 theta 5
     
-    theta3 = atan2(-ax, -az);
-    theta4 = atan2(-az*cos(theta3) - ax*sin(theta3), ay);
-    theta5 = atan2(-ny, -sy);
+    theta3 = atan2( -ax, -az);
+    theta4 = atan2( -cos(theta3)*az - sin(theta3)*ax, ay);
+    theta5 = atan2( sy, -ny);
     
     
     % Valores das Juntas para o robô planar 1
