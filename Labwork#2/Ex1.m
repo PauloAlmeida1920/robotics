@@ -99,7 +99,6 @@ for i=1:2
 
     q_ikine(i,:) = robot.ikine(A0_H(:,:,i), 'mask', [1 1 0 1 0 1]); % [x y z roll pitch yaw] 
     
-    % NOTA: Não está a funcionar para a junta 3...
 end
 
 
@@ -213,14 +212,14 @@ while(select ~= STOP)
             disp(['b) q' num2str(i)])
             disp('______________________________________________________________________')
             disp(' ')
-            disp('Caso positivo')
+            %disp('Caso positivo')
             disp(['q' num2str(i) ' = [ ' num2str(rad2deg(q(i,1))) 'º ' num2str(rad2deg(q(i,2))) 'º ' num2str(rad2deg(q(i,3))) 'º ]'])
             disp(' ')
 
-            disp('Caso negativo:')
-            disp(['q' num2str(i) ' = [ ' num2str(rad2deg(q_(i,1))) 'º ' num2str(rad2deg(q_(i,2))) 'º ' num2str(rad2deg(q_(i,3))) 'º ]'])
-            disp(' ')
-            disp(' ')
+%             disp('Caso negativo:')
+%             disp(['q' num2str(i) ' = [ ' num2str(rad2deg(q_(i,1))) 'º ' num2str(rad2deg(q_(i,2))) 'º ' num2str(rad2deg(q_(i,3))) 'º ]'])
+%             disp(' ')
+%             disp(' ')
             if i<3
             disp('c) Confirmação usando a toolbox Robotics:')
             disp(' ')
