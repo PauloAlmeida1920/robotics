@@ -79,7 +79,7 @@ robot = SerialLink(L, 'name', 'Robô Planar PPRRR');
 q_home = [0 0 0 0 0];
 
 % Valores Juntas aleatório
-q = [deg2rad(35) 1 deg2rad(15) deg2rad(50) deg2rad(20)];
+q = [deg2rad(35) 1 deg2rad(85) deg2rad(50) deg2rad(20)];
 
 
 %% a) Representação do Gripper no mundo e b) Confirmação dos dados
@@ -106,13 +106,21 @@ T0_G_nsat = [ nx sx ax tx;
                0  0  0  1 ];
 
 % Cinemática Inversa das juntas do Braço: d1 e d2
-syms d2 d1
 
-ty_ = T0_G(2,4);
-tz_ = T0_G(3,4);
-% Auxiliar
-d2 = ty + (-ty_ + d2);
-d1 = tz + (-tz_ + d1);
+t0_G = T0_G(1:3,4);
+Rz0_G = T0_G(1:3,3);
+
+% 0 t 2 = 0 t G - L5 * 0 Rz G
+t0_2 = simplify( t0_G - L5 * Rz0_G );
+
+% tx' e ty'
+tx_l = t0_2(1);
+ty_l = t0_2(2);
+
+% Vector Simbólico
+t0_G = T0_G_nsat(1:3,4);
+Rz0_G = T0_G_nsat(1:3,3);
+t0_2_syms = simplify( t0_G - L5 * Rz0_G );
 
 
 % Cinemática Inversa das juntas do Punho Esférico: theta3 theta4 theta 5
@@ -133,7 +141,7 @@ T2_G = simplify(  T2_0 * T0_G );
 
 
 % Juntas do Robô dadas pela Cinemática Inversa do robot
-q_byinv = inverse_kinematics_robot1(T0_G_values);
+q_byinv = inverse_kinematics_robot2(T0_G_values);
 
 % Confirmação usando a robotics toolbox
 q_bytoolbox = robot.ikine(T0_G_values, 'mask', [0 1 1 1 1 1]); % [x y z roll pitch yaw]
@@ -209,14 +217,16 @@ while (select ~= sair)
         disp(T0_G)
 
         disp('______________________________________________________________________')
-        disp('Cinemática Inversa das juntas do Braço: d1 e d2')
+        disp('Cinemática Inversa das juntas do Braço: theta1 e d2')
         disp(' ')
-        fprintf('ty = %s <=> d2 =  %s \n', ty_, d2);
-        fprintf('tz = %s <=> d1 =  %s \n', tz_, d1);
+        fprintf("tx' = %s \n", t0_2_syms(1));
+        fprintf("ty' = %s \n\n", t0_2_syms(2));        
+        fprintf("tx' = %s \n", tx_l);
+        fprintf("ty' = %s \n", ty_l);
         disp(' ')
 
         disp('______________________________________________________________________')
-        disp('Cinemática Inversa das juntas do Punho Esférico: theta3 theta4 theta 5')
+        disp('Cinemática Inversa das juntas do Punho Esférico: theta3 theta4 theta5')
         disp(' ')
         disp('Base ao Elo 2 -> 2 T 0:')
         disp(' ')

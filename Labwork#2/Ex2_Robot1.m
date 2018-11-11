@@ -211,12 +211,14 @@ while (select ~= sair)
         disp('______________________________________________________________________')
         disp('Cinemática Inversa das juntas do Braço: d1 e d2')
         disp(' ')
-        fprintf('ty = %s <=> d2 =  %s \n', ty_, d2);
-        fprintf('tz = %s <=> d1 =  %s \n', tz_, d1);
+        fprintf('ty = %s \n', ty_);
+        fprintf('tz = %s \n\n', tz_);
+        fprintf('<=> d2 =  %s \n', d2);
+        fprintf('<=> d1 =  %s \n', d1);
         disp(' ')
         
         disp('______________________________________________________________________')
-        disp('Cinemática Inversa das juntas do Punho Esférico: theta3 theta4 theta 5')
+        disp('Cinemática Inversa das juntas do Punho Esférico: theta3 theta4 theta5')
         disp(' ')
         disp('Base ao Elo 2 -> 2 T 0:')
         disp(' ')
