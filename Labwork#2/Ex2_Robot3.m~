@@ -29,7 +29,7 @@ R = 1; P = 0;
 %____________________________________________________________________________________
 %          thetai  |  di  |  ai |  alfai | offseti | jointtypei
 %____________________________________________________________________________________
-PJ_DH = [  theta1      0      0     pi/2         0           R;    % Junta prismática
+PJ_DH = [  theta1      0      0     pi/2      pi/2           R;    % Junta prismática
 %____________________________________________________________________________________
                 0     d2      0    -pi/2        L2           P;    % Junta prismática
 %____________________________________________________________________________________
@@ -81,7 +81,7 @@ robot = SerialLink(L, 'name', 'Robô Planar PPRRR');
 q_home = [0 0 0 0 0 0];
 
 % Valores Juntas aleatório
-q = [deg2rad(45) 1 deg2rad(45) deg2rad(30) deg2rad(45) deg2rad(15)];
+q = [deg2rad(45) 1 deg2rad(45) deg2rad(35) deg2rad(25) deg2rad(15)];
 
 
 %% a) Representação do Gripper no mundo e b) Confirmação dos dados
@@ -113,16 +113,16 @@ t0_G = T0_G(1:3,4);
 Rz0_G = T0_G(1:3,3);
 
 % 0 t 2 = 0 t G - L5 * 0 Rz G
-t0_3 = simplify( t0_G - L6 * Rz0_G );
+t0_2 = simplify( t0_G - L6 * Rz0_G );
 
 % tx' e ty'
-tx_l = t0_3(1);
-ty_l = t0_3(2);
+tx_l = t0_2(1);
+ty_l = t0_2(2);
 
 % Vector Simbólico
 t0_G = T0_G_nsat(1:3,4);
 Rz0_G = T0_G_nsat(1:3,3);
-t0_3_syms = simplify( t0_G - L6 * Rz0_G );
+t0_2_syms = simplify( t0_G - L6 * Rz0_G );
 
 
 % Cinemática Inversa das juntas do Punho Esférico: theta3 theta4 theta 5
@@ -130,17 +130,16 @@ t0_3_syms = simplify( t0_G - L6 * Rz0_G );
 % Auxiliar Base ao Braço -> 2 T 0:
 T0_1 = Ti(:,:,1);
 T1_2 = Ti(:,:,2);
-T2_3 = Ti(:,:,3);
 
-T0_3 = simplify( T0_1 * T1_2 * T2_3 );
+T0_2 = simplify( T0_1 * T1_2 );
 
-T3_0 = simplify( inv(T0_3) );
+T2_0 = simplify( inv(T0_2) );
 
 % Matriz Simbólica 2 T G: De forma a conhecer que valores usar dados em O T G
-T3_G_nsat = simplify( T3_0 * T0_G_nsat );
+T2_G_nsat = simplify( T2_0 * T0_G_nsat );
 
 % Resultado - Gripper no Elo 2 -> 2 T G:
-T3_G = simplify(  T3_0 * T0_G );
+T2_G = simplify(  T2_0 * T0_G );
 
 
 % Juntas do Robô dadas pela Cinemática Inversa do robot
@@ -224,8 +223,8 @@ while (select ~= sair)
         disp('______________________________________________________________________')
         disp('Cinemática Inversa das juntas do Braço: theta1, d2 e theta3')
         disp(' ')
-        fprintf("tx' = %s \n", t0_3_syms(1));
-        fprintf("ty' = %s \n\n", t0_3_syms(2));        
+        fprintf("tx' = %s \n", t0_2_syms(1));
+        fprintf("ty' = %s \n\n", t0_2_syms(2));        
         fprintf("tx' = %s \n", tx_l);
         fprintf("ty' = %s \n", ty_l);
         disp(' ')
@@ -233,15 +232,15 @@ while (select ~= sair)
         disp('______________________________________________________________________')
         disp('Cinemática Inversa das juntas do Punho Esférico: theta4 theta5 theta6')
         disp(' ')
-        disp('Base ao Elo 3 -> 3 T 0:')
+        disp('Base ao Elo 2 -> 2 T 0:')
         disp(' ')
-        disp(T3_0)
-        disp('Matriz Simbólica - Gripper no Elo 3 -> 2 T G:')
+        disp(T2_0)
+        disp('Matriz Simbólica - Gripper no Elo 2 -> 2 T G:')
         disp(' ')
-        disp(T3_G_nsat)
-        disp('Resultado - Gripper no Elo 3 -> 3 T G:')
+        disp(T2_G_nsat)
+        disp('Resultado - Gripper no Elo 2 -> 2 T G:')
         disp(' ')
-        disp(T3_G)
+        disp(T2_G)
         
         disp('______________________________________________________________________')  
         disp(' ')
@@ -264,8 +263,7 @@ while (select ~= sair)
                        num2str(rad2deg(q_bytoolbox(5))) 'º ' ...
                        num2str(rad2deg(q_bytoolbox(6))) 'º ]'])
         disp(' ')
-        disp('Os valores das juntas pelo nosso modelos estão correctos!')
-        disp('Os valores das juntas pela ikine são diferentes!')
+        disp('Os valores das juntas pela ikine dão diferentes.')
         disp('Existindo mutiplas soluções a aproximação pela ikine é mais dificil.')
         disp('Usando as juntas dadas dadas pela ikine e determinando a O T G pela função fkine.')
         disp('Verifica-se que o output da fkine é igual a dada por MGD_DH:')
