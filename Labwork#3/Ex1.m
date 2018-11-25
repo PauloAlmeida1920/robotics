@@ -1,3 +1,4 @@
+clear all
 close all
 clc
 
@@ -74,7 +75,7 @@ robot = SerialLink(L, 'name', 'Robô Planar PPRRR');
 q = [ 0 0 0 ];
 
 % Posição Home
-Tb_f = [ 0  -1   0   50; % 20
+Tb_f = [ 0  -1   0   20; % 20
          1   0   0   50;
          0   0   1   10;
          0   0   0   0  ];
@@ -152,11 +153,12 @@ Jac = Jacobian(T0_G, Ti, q_aux, PJ_DH(:,6));
 % Retirar as componentes de velocidade nula [ vz wx wy ]
 Jac_ = [ Jac(1:2,:); Jac(6,:) ];
         
-% Restrição na velocidade x em cm/s
-Vx = 10;
+% Restrição na velocidade em cm/s
+Vx = sqrt(5)*3;
+Vy = sqrt(5)*6;
 
 % Inversa da Jacobiana x Velocidades em XYZ
-qVelocidades = inv(Jac_)*[ Vx 0 0 ]';
+qVelocidades = inv(Jac_)*[ Vx Vy 0 ]';
 
 
 %% c) Movimento do manipulador: MAIS A BAIXO NO CÓDIGO DO MENU
@@ -198,7 +200,7 @@ while(select ~= STOP)
         % Prespectiva de lado do Robô  
         subplot(1,2,1);
         robot.plot(q, 'workspace', [-10 90 -10 90 -10 90], 'reach', ... 
-                       1, 'scale', 10, 'zoom', 0.25, 'jaxes');
+                       1, 'scale', 10, 'zoom', 0.25, 'jaxes');         
         % Prespectiva de topo do Robô  
         subplot(1,2,2);
         robot.plot(q, 'workspace', [-10 90 -10 90 -10 90], 'reach', ... 
@@ -229,14 +231,14 @@ while(select ~= STOP)
     end % fim da alinea a)    
     
     % b) Jacobiano - Expressões para a velocidade de rotação das juntas 
-    %    que asseguram a restrição temporal de pintura (vx=10cm/seg).	
+    %    que asseguram a restrição temporal de pintura (v=15cm/seg).	
     if select == 3
         disp('______________________________________________________________________')
         disp(' ')
         disp('b) Jacobiano:')
         disp('______________________________________________________________________')
         disp(' ')
-        disp('Expresoes para a velocidade das juntas p/ Vx = 10cm/s:')
+        disp('Expresoes para a velocidade das juntas p/ V = 15cm/s:')
         disp(' ')
         disp(qVelocidades)
      
@@ -254,12 +256,12 @@ while(select ~= STOP)
            
            % Restrição imposta no enuciado (e têm que ser negativo
            % para ir no sentido da base)
-           Vx = -10;
-           % Posição Y segundo a equação da reta y = mx + b
-           Vy = Vx;
+           Vx = -sqrt(5)*3;
+           % Posição Y segundo a equação da reta y = 2x + 10
+           Vy = -sqrt(5)*6; %2*Vx + 10;
            
            % Posição Final do Gripper
-           Xf = 0; Yf = 0;
+           Xf = -20; Yf = -50;
                               
            % Período de Amostragem dos Controladores 
            h = 0.1;
@@ -275,25 +277,28 @@ while(select ~= STOP)
               
                k = 1;
                 
-               while(Tb_f(1,4,k) > Xf && Tb_f(2,4,k) > Yf)
-                
+               while(Tb_f(1,4,k) > Xf || Tb_f(2,4,k) > Yf)
+                    
                    % [ Vx vy Vz ]
                    V(k,:) = [ Vx Vy 0 ];
                    
-                   % Inversa do Jacobiano x Velocidades em XYZ 
-                   qVelocidades_ = inv(Jac_)*V(k,:)';  
+                   % Inversa do Jacobiano x Velocidades em XYZ
+                   qVelocidades_ = inv(Jac_)*V(k,:)';
+                   
+                   
                    % Calculo da Inversa do Jacobiano
                    qVelocidades(:,k) = eval(subs(qVelocidades_, q_aux, q_controlo(k,:)));
                    
                    % Proximas Juntas segundo a Lei de Controlo: Abordagem Integradora
                    q_controlo(k+1,:) = q_controlo(k,:) + h*qVelocidades(:,k)';
                    
+                   
                    % tx e ty através da Matriz da Cinemática Directa
                    Tb_f(:,:,k+1) = eval(subs(T0_G, q_aux, q_controlo(k+1,:)));
                    
                    clc
                    disp(' ')
-                   disp(['Loading... ', num2str(k/50*100), '%']) 
+                   disp(['Loading... ', num2str(k/74*100), '%']) 
                 
                    k = k + 1;
                end
@@ -307,12 +312,12 @@ while(select ~= STOP)
            if select2 == 2
 
                % Controlo Propocional
-               kp = 1.0;
+               kp = 0.25;
                % Controlo Derivativo
-               kd = 0.65;
+               kd = 0.1;
                
                % Posição Inicial!
-               tx_desej = 50;
+               tx_desej = 20;
                ty_desej = 50;
                
                % Deslocamento = Velocidade*Período IDEAL!
@@ -321,7 +326,7 @@ while(select ~= STOP)
                
                k = 1;
                
-               while(Tb_f(1,4,k) > Xf && Tb_f(2,4, k) > Yf)
+               while(Tb_f(1,4,k) > Xf || Tb_f(2,4, k) > Yf)
 
                    % [ vx vy vz ]
                    V(k,:) = [ Vx Vy 0 ];
@@ -359,7 +364,7 @@ while(select ~= STOP)
                    
                    clc
                    disp(' ')
-                   disp(['Loading... ', num2str(k/51*100), '%']) 
+                   disp(['Loading... ', num2str(k/82*100), '%']) 
                    
                    k = k + 1;
                end
