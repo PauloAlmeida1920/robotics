@@ -1,24 +1,22 @@
 
 %% PLOT do Robô com velocidades
 
-function plot_robot(robot, k, V, qVelocidades, q_controlo, pos)
+function plot_robot2(robot, k, V, qVelocidades, q_controlo, pos)
 
     % Plot segundo o Controlador
     figure('units','normalized','outerposition',[0 0 1 1]);
     % Prespectiva de lado do Robô
     subplot(2,3,[5 6]);
-    %hold off
-    robot.plot(q_controlo(1,:), 'workspace', [-60 60 -60 60 -1 10], 'reach', ...
+    robot.plot(q_controlo(1,:), 'workspace', [-10 70 -20 40 -1 10], 'reach', ...
                                                     1, 'scale', 8, 'zoom', 0.25); 
     % Prespectiva de topo do Robô
-%    subplot(2,3,4);
-%    %hold on
-%     robot.plot(q_controlo(1,:), 'workspace', [-40 60 -10 60 -10 60], 'reach', ...
+%     subplot(2,3,4);
+%     robot.plot(q_controlo(1,:), 'workspace', [-10 60 -10 60 -10 60], 'reach', ...
 %         1, 'scale', 8, 'zoom', 0.25, 'view', 'top'); % 'trail', 'b.');
 
-    % Animação do robô
+    % Animação do Robô
     X = linspace(1, k-1, k);
-
+      
     for i=1:k-1
         tic % Start a stopwatch timer
         
@@ -27,14 +25,13 @@ function plot_robot(robot, k, V, qVelocidades, q_controlo, pos)
         % Plot das Velocidades Cartesianas
         subplot(2,3,1);
         v = plot( X(1:i), V(1:i,1)', '.',... % '-'
-                  X(1:i), V(1:i,2)', 'o');%,...
-                  %X(1:i), V(1:i,3)', '.');
-        title('Velocidades Cartesianas');
-        %legend('Vx', 'Vy', 'Vz');
+                  X(1:i), V(1:i,2)', 'o',... % 'o'
+                  X(1:i), V(1:i,3)', '.');
+        title('Velocidades Impostas');
         xlabel('k')
-        ylabel('Velocidade Cartesiana (m/s)')
+        ylabel('Velocidade Impostas (cm/s e rad/s)')
         xlim([0 k-1])
-        %ylim([-15 -3])
+        ylim([-5 5])
         grid on
 
         % Plot das Velocidades das Juntas
@@ -43,22 +40,21 @@ function plot_robot(robot, k, V, qVelocidades, q_controlo, pos)
                     X(1:i), qVelocidades(2,1:i), '.',...
                     X(1:i), qVelocidades(3,1:i), '.');
         title('Velocidades das Juntas');
-        %legend('W theta1', 'W theta2', ' W theta3');
         xlabel('k')
-        ylabel('Velocidade de Juntas (rad/s)')
+        ylabel('Velocidade das Juntas (deg/s e cm/s)')
         xlim([0 k-1])
         grid on
-
+        
         % Plot das Juntas
         subplot(2,3,3);
         th = plot( X(1:i), rad2deg(q_controlo(1:i,1)'), '.',...
-                   X(1:i), rad2deg(q_controlo(1:i,2)'), '.',...
-                   X(1:i), rad2deg(q_controlo(1:i,3)'), '.');
-        title('Angulos das Juntas');
-        %legend('Theta1', 'Theta2', ' Theta3');
+                   X(1:i), q_controlo(1:i,2'), '.',...
+                   X(1:i), rad2deg(q_controlo(1:i,3))', '.');
+        title('Juntas');
         xlabel('k')
-        ylabel('Angulos Juntas (graus)')
+        ylabel('Valores Juntas (deg e cm)')
         xlim([0 k-1])
+        %ylim([-1000 3500])
         grid on
         
         % Plot das Posições X Y Z        
@@ -73,16 +69,15 @@ function plot_robot(robot, k, V, qVelocidades, q_controlo, pos)
         ylim([-35 50])
         grid on
 
-
         %drawnow; %pause(0.05);  % this innocent line prevents the Matlab hang
         toc % Read the stopwatch timer
 
         % Temos que melhorar a perfomance destes plots!
     end
     
-    legend(v, 'Vx', 'Vy'); %, 'Vz');
-    legend(wth, 'W theta1', 'W theta2', 'W theta3');
-    legend(th, 'Theta1', 'Theta2', ' Theta3');
+    legend(v, 'Vx', 'Vy', 'Wz');
+    legend(wth, 'W theta1', 'V d2', 'W theta3');
+    legend(th, 'Theta1', ' d2', 'Theta3');
     legend(pos_, 'X', 'Y', 'Z');
 
 end

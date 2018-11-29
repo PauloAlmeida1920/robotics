@@ -40,7 +40,7 @@ PJ_DH = [  theta1      0     L1        0         0           R;   % Junta Rotaci
 [ T0_G, Ti ] = MGD_DH(PJ_DH);       
 
 % Offset/comprimentos dos elos (fixos)
-PJ_DH = eval(subs(PJ_DH, [L1 L2 L3], [40 40 10])); % a2 = 40 ou 35??
+PJ_DH = eval(subs(PJ_DH, [L1 L2 L3], [35 35 10])); % a2 = 40 ou 35??
 
 
 %% INICIALIZAÇÃO DO ROBOT: CRIAR LINKS
@@ -174,17 +174,17 @@ first = 0;
 
 while(select ~= STOP)
     
-    select = menu('Seleccione a acao a realizar:', 'Plot do Robô',...
-                                                   'alínea a)',...
-                                                   'alínea b)',...
-                                                   'alínea c)',...
-                                                   'Sair');    
+    select = menu('Seleccione:', 'Plot do Robô',...
+                                 'alínea a)',...
+                                 'alínea b)',...
+                                 'alínea c)',...
+                                 'Sair');    
     
    % Matriz dos parâmetros de Denavith-Hartenberg: PJ_DH e a O T G
     if first < 1
         disp('______________________________________________________________________')
         disp(' ')
-        disp('a) Matriz dos parâmetros de Denavith-Hartenberg: PJ_DH')
+        disp('Matriz dos parâmetros de Denavith-Hartenberg: PJ_DH')
         disp('______________________________________________________________________')
         disp(' ')
         robot.display
@@ -198,13 +198,13 @@ while(select ~= STOP)
         figure('units','normalized','outerposition',[0 0 1 1]);
         
         % Prespectiva de lado do Robô  
-        subplot(1,2,1);
-        robot.plot(q, 'workspace', [-10 90 -10 90 -10 90], 'reach', ... 
+%         subplot(1,2,1);
+        robot.plot(q, 'workspace', [-10 95 -10 95 -10 30], 'reach', ... 
                        1, 'scale', 10, 'zoom', 0.25, 'jaxes');         
-        % Prespectiva de topo do Robô  
-        subplot(1,2,2);
-        robot.plot(q, 'workspace', [-10 90 -10 90 -10 90], 'reach', ... 
-                       1, 'scale', 10, 'zoom', 0.25, 'view', 'top', 'jaxes');
+%         % Prespectiva de topo do Robô  
+%         subplot(1,2,2);
+%         robot.plot(q, 'workspace', [-10 90 -10 90 -10 90], 'reach', ... 
+%                        1, 'scale', 10, 'zoom', 0.25, 'view', 'top', 'jaxes');
                   
     end   
     
@@ -250,9 +250,10 @@ while(select ~= STOP)
        % sub-menu
        while(select2 ~= STOP2)
            
-           select2 = menu('Seleccione a opcao:', 'Integrador',...
-                                                 'Malha-Fechada',...
-                                                 'Back'); 
+           select2 = menu('Seleccione:', 'Integrador',...
+                                         'Malha-Fechada',...
+                                         'Back'); 
+           %---------------------------------------------------------------
            
            % Restrição imposta no enuciado (e têm que ser negativo
            % para ir no sentido da base)
@@ -264,7 +265,7 @@ while(select ~= STOP)
            Xf = -20; Yf = -50;
                               
            % Período de Amostragem dos Controladores 
-           h = 0.1;
+           h = 0.15;
            
            % Inicializa as Juntas segundo a Matriz Home/Posição Inicial
            [ q_controlo ] = inverse_kinematics_ex1(Tb_f);
@@ -279,7 +280,7 @@ while(select ~= STOP)
                 
                while(Tb_f(1,4,k) > Xf || Tb_f(2,4,k) > Yf)
                     
-                   % [ Vx vy Vz ]
+                   % [ Vx Vy Vz ]
                    V(k,:) = [ Vx Vy 0 ];
                    
                    % Inversa do Jacobiano x Velocidades em XYZ
@@ -296,17 +297,21 @@ while(select ~= STOP)
                    % tx e ty através da Matriz da Cinemática Directa
                    Tb_f(:,:,k+1) = eval(subs(T0_G, q_aux, q_controlo(k+1,:)));
                    
+                   
+                   pos_out(k,:) = Tb_f(1:3,4,k);
+                   
                    clc
                    disp(' ')
-                   disp(['Loading... ', num2str(k/74*100), '%']) 
-                
+                   disp(['Loading... ', num2str(k/50*100), '%']) 
+                    
                    k = k + 1;
                end
                
                % PLOT do Robô com velocidades
-               plot_robot(robot, k, V, qVelocidades, q_controlo);
+               plot_robot(robot, k, V, qVelocidades, q_controlo, pos_out);
               
            end
+           %---------------------------------------------------------------
            
            % 2. Abordagem em malha-fechada
            if select2 == 2
@@ -324,11 +329,15 @@ while(select ~= STOP)
                dx = Vx*h;
                dy = Vy*h;
                
+               % Velocidade Inicial
+               Vx = 0;
+               Vy = 0;
+               
                k = 1;
                
                while(Tb_f(1,4,k) > Xf || Tb_f(2,4, k) > Yf)
 
-                   % [ vx vy vz ]
+                   % [ Vx Vy Vz ]
                    V(k,:) = [ Vx Vy 0 ];
                  
                    % Inversa do Jacobiano x Velocidades em XYZ 
@@ -343,7 +352,7 @@ while(select ~= STOP)
                    Tb_f(:,:,k+1) = eval(subs(T0_G, q_aux, q_controlo(k+1,:)));
                    
                    % ------------------------------------------------------
-                   % Guardamos a Posição actual
+                   % Posição actual
                    tx_actual = Tb_f(1,4,k);
                    ty_actual = Tb_f(2,4,k);
                   
@@ -357,25 +366,24 @@ while(select ~= STOP)
                    Vx = kp*dx_erro + kd*dx_erro/h; 
                    Vy = kp*dy_erro + kd*dy_erro/h;
                    
-                   % NOTA: Como estamos a dividir o deslocamento a efectuar
-                   % pelo Período temos de imeadiato a velocidade a impor
-                   % ou seja, pela parte derivativa do controlo
+                   
                    % ------------------------------------------------------  
+                   
+                   pos_out(k,:) = Tb_f(1:3,4,k);
                    
                    clc
                    disp(' ')
-                   disp(['Loading... ', num2str(k/82*100), '%']) 
+                   disp(['Loading... ', num2str(k/57*100), '%']) 
                    
                    k = k + 1;
                end
                
                % PLOT do Robô com velocidades
-               plot_robot(robot, k, V, qVelocidades, q_controlo);          
+               plot_robot(robot, k, V, qVelocidades, q_controlo, pos_out);          
              
-           end     
-           % fim do sub-menu
-       end
-      
+           end
+       end % fim do sub-menu
+       select2 = 0;
         
     disp('______________________________________________________________________') 
     end % fim da alinea c)
