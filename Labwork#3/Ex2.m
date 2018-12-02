@@ -191,7 +191,10 @@ while(select ~= STOP)
         disp(' ')
         disp('Expressões para a velocidade das juntas c/ Wz = pi rad/s')
         disp(' ')
-        disp(qVelocidades)
+        
+        w1 = qVelocidades(1)
+        vd = qVelocidades(2)
+        w3 = qVelocidades(3)
       
     disp('______________________________________________________________________')    
     end % fim da alinea 3)
