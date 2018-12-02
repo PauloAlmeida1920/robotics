@@ -15,8 +15,6 @@ disp(' ')
 
 %% Robot RPR
 disp('*************************** Exercício 2 ******************************')
-disp(' ')
-disp('Aguarde...')
 
 syms theta1 d2 theta3 alfa
 
@@ -25,8 +23,6 @@ syms L4
 
 % Junta Rotacional ou Prismatica:
 R = 1; P = 0;
-
-% Robot [RPR] - Matriz dos parametros de Denavith-Hartenberg: PJ_DH
 %_________________________________________________________________________________
 %          thetai  |  di  |  ai |  alfai | offseti | jointtypei
 %_________________________________________________________________________________
@@ -90,16 +86,12 @@ Tb_f = [ -cos(alfa) 0  sin(alfa)  40;
 %NOTA: VER PDF EX2, SOLUÇÕES AQUI PARA COMPLEMENTAR CÁCULOS
 
 % Alfa em função do movimento circular
-alfa_ = 0;
-k = 1;
 while( alfa_ < 2*pi)
 
-    q(k,:) = inverse_kinematics_ex2(Tb_f, alfa_);
+    [ q ] = inverse_kinematics_ex2(Tb_f, alfa_);
     
-    % Incrementa um 1º
-    alfa_ = alfa_ + pi/180;
+    alfa
     
-    k = k + 1;
 end
 q = eval(q);
 
@@ -130,7 +122,7 @@ qVelocidades = inv(Jac_)*[ 0 0 Wz ]';
 % Variaveis MENU
 select = 0;
 select2 = 0;
-STOP = 5;
+STOP = 4;
 STOP2 = 3;
 first = 0;
 fix_bug = 0;
@@ -138,9 +130,8 @@ fix_bug = 0;
 while(select ~= STOP)
     
     select = menu('Seleccione:', 'Plot do Robô',...
-                                 'alínea 2)',...
                                  'alínea 3)',...
-                                 'alínea 4)',...
+                                 'Mover Robot',...
                                  'Quit');  
                                                 
    % Matriz dos parâmetros de Denavith-Hartenberg: PJ_DH e a O T G
@@ -162,28 +153,18 @@ while(select ~= STOP)
         figure('units','normalized','outerposition',[0 0 1 1]);
         % Prespectiva de lado do Robot  
 %         subplot(1,2,1);
-        robot.plot(q(1,:), 'workspace', [-10 90 -10 90 -10 20], 'reach', ... 
+        robot.plot(q, 'workspace', [-10 90 -10 90 -10 20], 'reach', ... 
                        1, 'scale', 10, 'zoom', 0.25, 'jaxes');
                    
 %         % Prespectiva de topo do Robô  
 %         subplot(1,2,2);
-%         robot.plot(q(1,:), 'workspace', [-10 90 -10 90 -10 20], 'reach', ... 
+%         robot.plot(q, 'workspace', [-10 90 -10 90 -10 20], 'reach', ... 
 %                        1, 'scale', 10, 'zoom', 0.25, 'view', 'top', 'jaxes');
                   
-    end
-    
-    % 2) Movimento circular em função da cinemática inversa
-    if select == 2        
-        figure('units','normalized','outerposition',[0 0 1 1]);       
-        % Prespectiva de topo do Robô  
-        robot.plot(q, 'workspace', [-10 70 -20 40 -1 10], 'reach', ... 
-                       1, 'scale', 10, 'zoom', 0.25, 'view', 'top', 'jaxes');
-      
-    disp('______________________________________________________________________')    
-    end % fim da alinea 2)
-    
+    end  
+
     % 3) Calcule as Expressões para a velocidade das juntas
-    if select == 3        
+    if select == 2        
         disp('______________________________________________________________________')
         disp(' ')
         disp('b) Jacobiano:')
@@ -194,10 +175,11 @@ while(select ~= STOP)
         disp(qVelocidades)
       
     disp('______________________________________________________________________')    
-    end % fim da alinea 3)
+    end % fim da alinea b)
     
     % 4) Movimento do manipulador com malha de controlo
-    if select == 4
+    
+    if select == 3
        % sub-menu
        while(select2 ~= STOP2)
            
@@ -349,7 +331,7 @@ while(select ~= STOP)
       select2 = 0;
       
     disp('______________________________________________________________________')   
-    end % fim da alinea 4)   
+    end % fim da alinea d)   
 end % fim do menu/ fim do exercicio
 
 
