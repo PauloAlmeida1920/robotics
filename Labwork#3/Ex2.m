@@ -5,7 +5,7 @@ clc
 format short 
 
 disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-disp('%%     [Robótica - 11/11/2018 ~ 2/12/2018] LABWORK#3 - PROBLEMA 1    %%')
+disp('%%     [Robótica - 11/11/2018 ~ 2/12/2018] LABWORK#3 - PROBLEMA 2    %%')
 disp('%%                                                                   %%')
 disp('%%                   Frederico Vaz, nº 2011283029                    %%')
 disp('%%                   Paulo Almeida, nº 2010128473                    %%')
@@ -14,10 +14,11 @@ disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
 disp(' ')
 
 %% Robot RPR
-disp('*************************** Exercício 2 ******************************')
+disp('*************************** ExercÃ­cio 2 ******************************')
 disp(' ')
 disp('Aguarde...')
 
+% 1) Modelo cinemático directo do Robot RPR
 syms theta1 d2 theta3 alfa
 
 % Offset/comprimentos dos elos (fixos)
@@ -39,7 +40,7 @@ PJ_DH = [  theta1      0      0     pi/2     pi/2           R;   % Junta Rotacio
                 0     L4      0        0        0           R; ]; % (Não aplicável)
 %_________________________________________________________________________________
 
-% A cinematica directa da base   até ao Gripper: 
+% A cinematica directa da base até ao Gripper: 
 [ T0_G, Ti ] = MGD_DH(PJ_DH);       
 
 % Offset/comprimentos dos elos (fixos)
@@ -59,7 +60,7 @@ for i = 1 : size(PJ_DH,1)
                     'offset', eval(PJ_DH(i,5)));
     end
     
-    if PJ_DH(i,6) == P              % Junta Prismática
+    if PJ_DH(i,6) == P              % Junta PrismÃ¡tica
         
         L(i) = Link('theta',eval(PJ_DH(i,1)),...
                     'a', eval(PJ_DH(i,3)),...
@@ -84,10 +85,11 @@ Tb_f = [ -cos(alfa) 0  sin(alfa)  40;
                   0 1          0   0;
                   0 0          0   1  ];
 
-      
-%% 2) Cinemática Inversa/Solução para às variáveis das juntas: theta1 d2 theta3
+     
+%% 2) Cinemática Inversa/Solução para as variáveis das juntas: theta1 d2 theta3
 
-%NOTA: VER PDF EX2, SOLUÇÕES AQUI PARA COMPLEMENTAR CÁCULOS
+
+% NOTA: VER PDF EX2 COM SOLUÇÕES ANALÍTICAS PARA O CÁLCULO DA INVERSA
 
 % Alfa em função do movimento circular
 alfa_ = 0;
@@ -96,7 +98,7 @@ while( alfa_ < 2*pi)
 
     q(k,:) = inverse_kinematics_ex2(Tb_f, alfa_);
     
-    % Incrementa um 1º
+    % Incrementa um 1Âº
     alfa_ = alfa_ + pi/180;
     
     k = k + 1;
@@ -125,6 +127,10 @@ qVelocidades = inv(Jac_)*[ 0 0 Wz ]';
 %% 4) Movimento do manipulador: MAIS A BAIXO NO CÓDIGO DO MENU
 
 
+
+
+%##################################################################################################
+%##################################################################################################
 %% MENU ("main")
 
 % Variaveis MENU
@@ -137,12 +143,12 @@ fix_bug = 0;
     
 while(select ~= STOP)
     
-    select = menu('Seleccione:', 'Plot do Robô',...
+    select = menu('Seleccione:', 'Plot do Robô´',...
                                  'alínea 2)',...
                                  'alínea 3)',...
                                  'alínea 4)',...
                                  'Quit');  
-                                                
+                                         
    % Matriz dos parâmetros de Denavith-Hartenberg: PJ_DH e a O T G
     if first < 1
         disp('______________________________________________________________________')
@@ -162,10 +168,11 @@ while(select ~= STOP)
         figure('units','normalized','outerposition',[0 0 1 1]);
         % Prespectiva de lado do Robot  
 %         subplot(1,2,1);
+
         robot.plot(q(1,:), 'workspace', [-10 90 -10 90 -10 20], 'reach', ... 
                        1, 'scale', 10, 'zoom', 0.25, 'jaxes');
-                   
-%         % Prespectiva de topo do Robô  
+                       
+%         % Prespectiva de topo do Robot  
 %         subplot(1,2,2);
 %         robot.plot(q(1,:), 'workspace', [-10 90 -10 90 -10 20], 'reach', ... 
 %                        1, 'scale', 10, 'zoom', 0.25, 'view', 'top', 'jaxes');
@@ -182,7 +189,7 @@ while(select ~= STOP)
     disp('______________________________________________________________________')    
     end % fim da alinea 2)
     
-    % 3) Calcule as Expressões para a velocidade das juntas
+    % 3) Calcule as ExpressÃµes para a velocidade das juntas
     if select == 3        
         disp('______________________________________________________________________')
         disp(' ')
@@ -191,11 +198,10 @@ while(select ~= STOP)
         disp(' ')
         disp('Expressões para a velocidade das juntas c/ Wz = pi rad/s')
         disp(' ')
-        
         w1 = qVelocidades(1)
         vd = qVelocidades(2)
         w3 = qVelocidades(3)
-      
+        
     disp('______________________________________________________________________')    
     end % fim da alinea 3)
     
@@ -217,6 +223,7 @@ while(select ~= STOP)
            
            % Inicializa as Juntas segundo a Matriz Home/Posição Inicial
            alfa_ = 0;
+           
            if fix_bug ~= 1
                 Tb_f = eval(subs(Tb_f, alfa, alfa_));
                 fix_bug = 1;
@@ -227,6 +234,7 @@ while(select ~= STOP)
            Jac_ = eval(subs(Jac_, L4, 10));
            T0_G = eval(subs(T0_G, L4, 10));
                    
+           %»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
            % 1. Abordagem Integradora
            if select2 == 1
                
@@ -255,27 +263,28 @@ while(select ~= STOP)
                    disp(' ')
                    disp(['Loading... ', num2str((k/29)*100), '%'])
                    
-                   % Atendendo que a junta correspondente ao gripper é fixo
-                   % acrescentamos 0 a ultima junta de forma a trabalharmos na Toolbox 
+                   % Atendendo que a junta correspondente ao gripper é fixa
+                   % acrescentamos 0 à ultima junta de forma a trabalharmos na Toolbox 
                    q_out(k,:) = [ q_controlo(k,1:3) 0 ];
                    pos_out(k,:) = Tb_f(1:3,4,k);
                    
                    k = k + 1;
                end
                
-               % PLOT do Robô com velocidades
+               % PLOT do Robot com velocidades
                plot_robot2(robot, k, V, qVelocidades, q_out, pos_out);
                
            end
-           %---------------------------------------------------------------
            
+           
+           %»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»           
            % 2. Abordagem em malha-fechada
            if select2 == 2
                
                % Controlo Propocional
                kp = 0.25;
                
-               % Período de Amostragem do Controlador
+               % PerÃ­odo de Amostragem do Controlador
                h = 0.01;
                
                % Inicializa alfa desejado
@@ -306,7 +315,7 @@ while(select ~= STOP)
                    q_controlo(k+1,:) = q_controlo(k,:) + 1*h*qVelocidades(:,k)';
                    
                  
-                   % tx e ty através da Matriz da Cinemática Directa
+                   % tx e ty atravÃ©s da Matriz da CinemÃ¡tica Directa
                    Tb_f(:,:,k+1) = eval(subs(T0_G, q_aux,...
                                                  q_controlo(k,:) ));
                    
@@ -335,7 +344,7 @@ while(select ~= STOP)
                    disp(' ')
                    disp(['Loading... ', num2str((k/53)*100), '%'])
                   
-                   % Atendendo que a junta correspondente ao gripper é fixo
+                   % Atendendo que a junta correspondente ao gripper é fixa
                    % acrescentamos 0 a ultima junta de forma a trabalharmos na Toolbox 
                    q_out(k,:) = [ q_controlo(k,1:3) 0 ];
                    pos_out(k,:) = Tb_f(1:3,4,k);
@@ -343,7 +352,7 @@ while(select ~= STOP)
                    k = k + 1;
                end
                
-               % PLOT do Robô com velocidades
+               % PLOT do Robot com velocidades
                plot_robot2(robot, k, V, qVelocidades, q_out, pos_out);
  
            end

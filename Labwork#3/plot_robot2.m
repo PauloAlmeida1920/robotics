@@ -1,20 +1,20 @@
 
-%% PLOT do Rob√¥ com velocidades
+%% PLOT do Robot com velocidades
 
 function plot_robot2(robot, k, V, qVelocidades, q_controlo, pos)
 
     % Plot segundo o Controlador
     figure('units','normalized','outerposition',[0 0 1 1]);
-    % Prespectiva de lado do Rob√¥
-    subplot(2,3,[5 6]);
+    % Prespectiva de lado do Robot
+    subplot(2,3,5);
     robot.plot(q_controlo(1,:), 'workspace', [-10 70 -20 40 -1 10], 'reach', ...
                                                     1, 'scale', 8, 'zoom', 0.25); 
-    % Prespectiva de topo do Rob√¥
-%     subplot(2,3,4);
-%     robot.plot(q_controlo(1,:), 'workspace', [-10 60 -10 60 -10 60], 'reach', ...
-%         1, 'scale', 8, 'zoom', 0.25, 'view', 'top'); % 'trail', 'b.');
+    % Prespectiva de topo do Robot
+    subplot(2,3,6);
+    robot.plot(q_controlo(1,:), 'workspace', [-10 60 -10 60 -10 60], 'reach', ...
+                                    1, 'scale', 8, 'zoom', 0.25, 'view', 'top'); % 'trail', 'b.');
 
-    % Anima√ß√£o do Rob√¥
+    % AnimaÁ„o do Robot
     X = linspace(1, k-1, k);
       
     for i=1:k-1
@@ -57,14 +57,14 @@ function plot_robot2(robot, k, V, qVelocidades, q_controlo, pos)
         %ylim([-1000 3500])
         grid on
         
-        % Plot das Posi√ß√µes X Y Z        
+        % Plot das PosiÁıes X Y Z        
         subplot(2,3,4);
         pos_ = plot( X(1:i), pos(1:i,1)', '.',...
                      X(1:i), pos(1:i,2)', '.',...
                      X(1:i), pos(1:i,3)', '.');
-        title('Posi√ß√µes XYZ do gripper');
+        title('PosiÁıes XYZ do gripper');
         xlabel('k')
-        ylabel('Posicao (cm)')
+        ylabel('PosiÁ„o (cm)')
         xlim([0 k-1])
         ylim([-35 50])
         grid on
