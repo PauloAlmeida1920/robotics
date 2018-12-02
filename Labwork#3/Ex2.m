@@ -60,7 +60,7 @@ for i = 1 : size(PJ_DH,1)
                     'offset', eval(PJ_DH(i,5)));
     end
     
-    if PJ_DH(i,6) == P              % Junta PrismÃ¡tica
+    if PJ_DH(i,6) == P              % Junta Prismática
         
         L(i) = Link('theta',eval(PJ_DH(i,1)),...
                     'a', eval(PJ_DH(i,3)),...
@@ -87,7 +87,6 @@ Tb_f = [ -cos(alfa) 0  sin(alfa)  40;
 
      
 %% 2) Cinemática Inversa/Solução para as variáveis das juntas: theta1 d2 theta3
-
 
 % NOTA: VER PDF EX2 COM SOLUÇÕES ANALÍTICAS PARA O CÁLCULO DA INVERSA
 
