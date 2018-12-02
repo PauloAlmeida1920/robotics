@@ -1,5 +1,5 @@
-
-%% Fun√ß√£o da Cinem√°tica Inversa do Robot
+  
+%% FunÁ„o da Cinem·tica Inversa do Robot
 %  Consultar Ex2_Inversa.pdf, para melhor compreens√£o da implementa√ßao
 
 function [ q ] = inverse_kinematics_ex2(T0_G, alfa)

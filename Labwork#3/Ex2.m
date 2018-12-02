@@ -5,16 +5,15 @@ clc
 format short 
 
 disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
-disp('%%     [Rob√≥tica - 11/11/2018 ~ 2/12/2018] LABWORK#3 - PROBLEMA 1    %%')
+disp('%%     [RobÛtica - 11/11/2018 ~ 2/12/2018] LABWORK#3 - PROBLEMA 2    %%')
 disp('%%                                                                   %%')
-disp('%%                   Frederico Vaz, n¬∫ 2011283029                    %%')
-disp('%%                   Paulo Almeida, n¬∫ 2010128473                    %%')
+disp('%%                   Frederico Vaz, n∫ 2011283029                    %%')
+disp('%%                   Paulo Almeida, n∫ 2010128473                    %%')
 disp('%%                                                                   %%')
 disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
 disp(' ')
 
-%% Robot RPR - 
-disp('*************************** Exerc√≠cio 2 ******************************')
+%% 1) Modelo cinem·tico directo do Robot RPR
 
 syms theta1 d2 theta3 alfa
 
@@ -28,21 +27,21 @@ R = 1; P = 0;
 %_________________________________________________________________________________
 PJ_DH = [  theta1      0      0     pi/2     pi/2           R;   % Junta Rotacional
 %_________________________________________________________________________________
-                0     d2      0    -pi/2        0           P;   % Junta Prism√°tica
+                0     d2      0    -pi/2        0           P;   % Junta Prism·tica
 %_________________________________________________________________________________
            theta3      0      0     pi/2        0           R;   % Junta Rotacional
 %_________________________________________________________________________________
-                0     L4      0        0        0           R; ]; % (N√£o aplic√°vel)
+                0     L4      0        0        0           R; ]; % (N„o aplic·vel)
 %_________________________________________________________________________________
 
-% A cinematica directa da base   at√© ao Gripper: 
+% A cinematica directa da base atÈ ao Gripper: 
 [ T0_G, Ti ] = MGD_DH(PJ_DH);       
 
 % Offset/comprimentos dos elos (fixos)
 PJ_DH = eval(subs(PJ_DH, L4, 10));
 
 
-%% INICIALIZA√á√ÉO DO ROBOT: CRIAR LINKS
+%% INICIALIZA«√O DO ROBOT: CRIAR LINKS
 
 
 for i = 1 : size(PJ_DH,1)
@@ -70,48 +69,52 @@ end
 robot = SerialLink(L, 'name', 'Robot Planar RRR');
 
 
-%% VARI√ÅVEIS GLOBAIS 
+%% VARI¡VEIS GLOBAIS 
 
-% Inicializa√ß√£o do vector de juntas na nossa Posi√ß√£o "home" a come√ßar no
+% InicializaÁ„o do vector de juntas na nossa PosiÁ„o "home" a comeÁar no
 % no ponto inicial [ bmin, -30, 35] dado no enuciado 
 
-% Posi√ß√£o HOME:
+% PosiÁ„o HOME:
 Tb_f = [ 0  -cos(alfa)  sin(alfa)  40;
          0   sin(alfa)  cos(alfa)  20; 
          0   0          0           0;  
          0   0          0           1  ];
 
      
-%% 2) Cinem√°tica Inversa/Solu√ß√£o para √†s vari√°veis das juntas: theta1 d2 theta3
+%% 2) Cinem·tica Inversa/SoluÁ„o para as vari·veis das juntas: theta1 d2 theta3
 
-%NOTA: VER PDF EX2, SOLU√á√ïES AQUI PARA COMPLEMENTAR C√ÅCULOS
+% NOTA: VER PDF EX2 COM SOLU«’ES ANALÕTICAS PARA O C¡LCULO DA INVERSA
 
 [ q ] = inverse_kinematics_ex2(Tb_f, 0);
 
 q = eval([ q(1:3) 0 ]);
 
 
-%% 3) Jacobiano: express√µes para a velocidade de rota√ß√£o das juntas 
+%% 3) Jacobiano: expressıes para a velocidade de rotaÁ„o das juntas 
 
 % Juntas em symbolic p/ resolver o Jacobiano
 q_aux = [ theta1 d2 theta3 ];
 
-% Construir jacobiana 2 partir dos par√¢metros calculados na Cinem√°tica inversa
+% Construir jacobiana 2 partir dos par‚metros calculados na Cinem·tica inversa
 Jac = Jacobian(T0_G, Ti, q_aux, PJ_DH(:,6));
 
 % Componentes de velocidade objectivo [ vx vy wz ]
 Jac_ = [ Jac(1:2, 1:3); Jac(6,1:3) ];
 
-% Restri√ß√£o na velocidade Wz
+% RestriÁ„o na velocidade Wz
 Wz = pi;
 
 % Inversa da Jacobiana x Velocidades em
 qVelocidades = inv(Jac_)*[ 0 0 Wz ]';
         
 
-%% 4) Movimento do manipulador: MAIS A BAIXO NO C√ìDIGO DO MENU
+%% 4) Movimento do manipulador: MAIS A BAIXO NO C”DIGO DO MENU
 
 
+
+
+%##################################################################################################
+%##################################################################################################
 %% MENU ("main")
 
 % Variaveis MENU
@@ -126,10 +129,10 @@ while(select ~= STOP)
     
 
     
-    select = menu('Seleccione:', 'Plot do Rob√¥',...
-                                 'al√≠nea 3)',...
-                                 'Mover Robot',...
-                                 'Quit');  
+    select = menu('Seleccione:', 'Cinem·tica Directa & Plot do Robot',...
+                                 'Velocidades das juntas',...
+                                 'Malha de controlo',...
+                                 'Sair');  
                                                 
    % Matriz dos par√¢metros de Denavith-Hartenberg: PJ_DH e a O T G
     if first < 1
@@ -188,11 +191,12 @@ while(select ~= STOP)
            % Velocidades impostas: Velocidade angular Wz
            Wz = pi;
                                          
-           % Per√≠odo de Amostragem dos Controladores 
+           % PerÌodo de Amostragem dos Controladores 
            h = 0.1;
            
-           % Inicializa as Juntas segundo a Matriz Home/Posi√ß√£o Inicial
+           % Inicializa as Juntas segundo a Matriz Home/PosiÁ„o Inicial
            alfa_ = 0;
+           
            if fix_bug ~= 1
                 Tb_f = eval(subs(Tb_f, alfa, alfa_));
                 fix_bug = 1;
@@ -203,6 +207,7 @@ while(select ~= STOP)
            Jac_ = eval(subs(Jac_, L4, 10));
            T0_G = eval(subs(T0_G, L4, 10));
                    
+           %ªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªª
            % 1. Abordagem Integradora
            if select2 == 1
                
@@ -223,7 +228,7 @@ while(select ~= STOP)
                    q_controlo(k+1,:) = q_controlo(k,:) + h*qVelocidades(:,k)';
                    
                    
-                   % tx e ty atrav√©s da Matriz da Cinem√°tica Directa
+                   % tx e ty atravÈs da Matriz da Cinem·tica Directa
                    Tb_f(:,:,k+1) = eval(subs(T0_G, q_aux,...
                                                  q_controlo(k,:) ));
                                          
@@ -231,20 +236,21 @@ while(select ~= STOP)
                    disp(' ')
                    disp(['Loading... ', num2str((k/29)*100), '%'])
                    
-                   % Atendendo que a junta correspondente ao gripper √© fixo
-                   % acrescentamos 0 a ultima junta de forma a trabalharmos na Toolbox 
+                   % Atendendo que a junta correspondente ao gripper È fixa
+                   % acrescentamos 0 ‡ ultima junta de forma a trabalharmos na Toolbox 
                    q_out(k,:) = [ q_controlo(k,1:3) 0 ];
                    pos_out(k,:) = Tb_f(1:3,4,k);
                    
                    k = k + 1;
                end
                
-               % PLOT do Rob√¥ com velocidades
+               % PLOT do Robot com velocidades
                plot_robot2(robot, k, V, qVelocidades, q_out, pos_out);
                
            end
-           %---------------------------------------------------------------
            
+           
+           %ªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªªª           
            % 2. Abordagem em malha-fechada
            if select2 == 2
                
@@ -324,7 +330,7 @@ while(select ~= STOP)
                    disp(' ')
                    disp(['Loading... ', num2str((k/44)*100), '%'])
                   
-                   % Atendendo que a junta correspondente ao gripper √© fixo
+                   % Atendendo que a junta correspondente ao gripper È fixa
                    % acrescentamos 0 a ultima junta de forma a trabalharmos na Toolbox 
                    q_out(k,:) = [ q_controlo(k,1:3) 0 ];
                    pos_out(k,:) = Tb_f(1:3,4,k);
@@ -332,7 +338,7 @@ while(select ~= STOP)
                    k = k + 1;
                end
                
-               % PLOT do Rob√¥ com velocidades
+               % PLOT do Robot com velocidades
                plot_robot2(robot, k, V, qVelocidades, q_out, pos_out);
  
            end
