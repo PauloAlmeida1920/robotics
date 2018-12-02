@@ -1,5 +1,5 @@
   
-%% FunÁ„o da Cinem·tica Inversa do Robot
+%% Fun√ß√£o da Cinem√°tica Inversa do Robot
 %  Consultar Ex2_Inversa.pdf, para melhor compreens√£o da implementa√ßao
 
 function [ q ] = inverse_kinematics_ex2(T0_G, alfa)
@@ -25,6 +25,6 @@ d2 = sqrt( (tx - 10*ax)^2 + (ty - 10*ay)^2 );
 
 
 
-q = [ theta1 d2 theta3 0 ];
+q = [ theta1 d2 theta3 ];
 
 end

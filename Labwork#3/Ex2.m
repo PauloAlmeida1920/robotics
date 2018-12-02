@@ -14,7 +14,7 @@ disp('%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%')
 disp(' ')
 
 %% Robot RPR
-disp('*************************** ExercÃ­cio 2 ******************************')
+disp('*************************** Exercício 2 ******************************')
 disp(' ')
 disp('Aguarde...')
 
@@ -24,7 +24,7 @@ syms theta1 d2 theta3 alfa
 % Offset/comprimentos dos elos (fixos)
 syms L4
 
-% Junta Rotacional ou Prismatica:
+% Junta Rotacional ou Prismática:
 R = 1; P = 0;
 
 % Robot [RPR] - Matriz dos parametros de Denavith-Hartenberg: PJ_DH
@@ -98,7 +98,7 @@ while( alfa_ < 2*pi)
 
     q(k,:) = inverse_kinematics_ex2(Tb_f, alfa_);
     
-    % Incrementa um 1Âº
+    % Incrementa um 1º
     alfa_ = alfa_ + pi/180;
     
     k = k + 1;
@@ -128,9 +128,6 @@ qVelocidades = inv(Jac_)*[ 0 0 Wz ]';
 
 
 
-
-%##################################################################################################
-%##################################################################################################
 %% MENU ("main")
 
 % Variaveis MENU
@@ -143,7 +140,7 @@ fix_bug = 0;
     
 while(select ~= STOP)
     
-    select = menu('Seleccione:', 'Plot do Robô´',...
+    select = menu('Seleccione:', 'Plot do Robô',...
                                  'alínea 2)',...
                                  'alínea 3)',...
                                  'alínea 4)',...
@@ -169,7 +166,7 @@ while(select ~= STOP)
         % Prespectiva de lado do Robot  
 %         subplot(1,2,1);
 
-        robot.plot(q(1,:), 'workspace', [-10 90 -10 90 -10 20], 'reach', ... 
+        robot.plot([q(1,:) 0], 'workspace', [-10 90 -10 90 -10 20], 'reach', ... 
                        1, 'scale', 10, 'zoom', 0.25, 'jaxes');
                        
 %         % Prespectiva de topo do Robot  
@@ -183,7 +180,7 @@ while(select ~= STOP)
     if select == 2        
         figure('units','normalized','outerposition',[0 0 1 1]);       
         % Prespectiva de topo do Robô  
-        robot.plot(q, 'workspace', [-10 70 -20 40 -1 10], 'reach', ... 
+        robot.plot([q 0], 'workspace', [-10 70 -20 40 -1 10], 'reach', ... 
                        1, 'scale', 10, 'zoom', 0.25, 'view', 'top', 'jaxes');
       
     disp('______________________________________________________________________')    
@@ -229,7 +226,7 @@ while(select ~= STOP)
                 fix_bug = 1;
            end
        
-           [ q_controlo ] = inverse_kinematics_ex2(Tb_f, alfa);
+           [ q_controlo ] = inverse_kinematics_ex2(Tb_f, alfa_);
            
            Jac_ = eval(subs(Jac_, L4, 10));
            T0_G = eval(subs(T0_G, L4, 10));
@@ -257,7 +254,7 @@ while(select ~= STOP)
                    
                    % tx e ty através da Matriz da Cinemática Directa
                    Tb_f(:,:,k+1) = eval(subs(T0_G, q_aux,...
-                                                 q_controlo(k,:) ));
+                                                   q_controlo(k,:) ));
                                          
                    clc
                    disp(' ')
@@ -315,9 +312,9 @@ while(select ~= STOP)
                    q_controlo(k+1,:) = q_controlo(k,:) + 1*h*qVelocidades(:,k)';
                    
                  
-                   % tx e ty atravÃ©s da Matriz da CinemÃ¡tica Directa
+                   % tx e ty através da Matriz da Cinemática Directa
                    Tb_f(:,:,k+1) = eval(subs(T0_G, q_aux,...
-                                                 q_controlo(k,:) ));
+                                                   q_controlo(k,:) ));
                    
                    % ------------------------------------------------------
                    % Clacula a alfa actual     

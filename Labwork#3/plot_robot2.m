@@ -14,7 +14,7 @@ function plot_robot2(robot, k, V, qVelocidades, q_controlo, pos)
     robot.plot(q_controlo(1,:), 'workspace', [-10 60 -10 60 -10 60], 'reach', ...
                                     1, 'scale', 8, 'zoom', 0.25, 'view', 'top'); % 'trail', 'b.');
 
-    % Animação do Robot
+    % AnimaÃ§Ã£o do Robot
     X = linspace(1, k-1, k);
       
     for i=1:k-1
@@ -57,14 +57,14 @@ function plot_robot2(robot, k, V, qVelocidades, q_controlo, pos)
         %ylim([-1000 3500])
         grid on
         
-        % Plot das Posições X Y Z        
+        % Plot das PosiÃ§Ãµes X Y Z        
         subplot(2,3,4);
         pos_ = plot( X(1:i), pos(1:i,1)', '.',...
                      X(1:i), pos(1:i,2)', '.',...
                      X(1:i), pos(1:i,3)', '.');
-        title('Posições XYZ do gripper');
+        title('PosiÃ§Ãµes XYZ do gripper');
         xlabel('k')
-        ylabel('Posição (cm)')
+        ylabel('PosiÃ§Ã£o (cm)')
         xlim([0 k-1])
         ylim([-35 50])
         grid on
