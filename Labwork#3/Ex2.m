@@ -134,11 +134,11 @@ while(select ~= STOP)
                                  'Malha de controlo',...
                                  'Sair');  
                                                 
-   % Matriz dos par√¢metros de Denavith-Hartenberg: PJ_DH e a O T G
+   % Matriz dos par‚metros de Denavith-Hartenberg: PJ_DH e a O T G
     if first < 1
         disp('______________________________________________________________________')
         disp(' ')
-        disp('Matriz dos par√¢metros de Denavith-Hartenberg: PJ_DH')
+        disp('Matriz dos par‚metros de Denavith-Hartenberg: PJ_DH')
         disp('______________________________________________________________________')
         disp(' ')
         robot.display
@@ -153,26 +153,29 @@ while(select ~= STOP)
         figure('units','normalized','outerposition',[0 0 1 1]);
         % Prespectiva de lado do Robot  
 %         subplot(1,2,1);
-        robot.plot(q, 'workspace', [-10 90 -10 90 -10 20], 'reach', ... 
-                       1, 'scale', 10, 'zoom', 0.25, 'jaxes');
+%          robot.plot(q, 'workspace', [-10 90 -10 90 -10 20], 'reach', ... 
+%                       1, 'scale', 10, 'zoom', 0.25, 'jaxes');
                    
-%         % Prespectiva de topo do Rob√¥  
+%         % Prespectiva de topo do Robot  
 %         subplot(1,2,2);
-%         robot.plot(q, 'workspace', [-10 90 -10 90 -10 90], 'reach', ... 
-%                        1, 'scale', 10, 'zoom', 0.25, 'view', 'top', 'jaxes');
+         robot.plot(q, 'workspace', [-10 90 -10 90 -10 90], 'reach', ... 
+                        1, 'scale', 10, 'zoom', 0.25, 'view', 'top', 'jaxes');
                   
     end  
 
-    % 3) Calcule as Express√µes para a velocidade das juntas
+    % 3) Calcule as Expressıes para a velocidade das juntas
     if select == 2        
         disp('______________________________________________________________________')
         disp(' ')
         disp('b) Jacobiano:')
         disp('______________________________________________________________________')
         disp(' ')
-        disp('Express√µes para a velocidade das juntas c/ Wz = pi rad/s')
+        disp('Expressıes para a velocidade das juntas c/ Wz = pi rad/s')
         disp(' ')
-        disp(qVelocidades)
+        w1 = qVelocidades(1)
+        vd = qVelocidades(2)
+        w3 = qVelocidades(3)
+        disp(' ')
       
     disp('______________________________________________________________________')    
     end % fim da alinea b)
