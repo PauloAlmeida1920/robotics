@@ -180,7 +180,7 @@ while(select ~= STOP)
     if select == 2        
         figure('units','normalized','outerposition',[0 0 1 1]);       
         % Prespectiva de topo do Robô  
-        robot.plot([q 0], 'workspace', [-10 70 -20 40 -1 10], 'reach', ... 
+        robot.plot([q zeros(size(q,1),1)], 'workspace', [-10 70 -20 40 -1 10], 'reach', ... 
                        1, 'scale', 10, 'zoom', 0.25, 'view', 'top', 'jaxes');
       
     disp('______________________________________________________________________')    
