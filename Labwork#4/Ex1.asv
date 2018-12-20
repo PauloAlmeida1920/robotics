@@ -83,9 +83,9 @@ ti = 5; % instante de tempo em que o manipulador passa no ponto intermédio, pi
 % transformações para os pontos que definem a trajectória do mamnipulador
 
 A_T_0 = [ 0   -0.2588  0.9659   23.8014;
-          0   -0.9659  -0.2588  115539 ; 
+          0   -0.9659  -0.2588  115539; 
           1     0         0     0      ;
-          0     0         0     1     ];
+          0     0         0     1   ];
       
 i_T_0 = [ 0   1    0   0 ;
           0   0    1   0 ;
