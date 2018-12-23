@@ -65,7 +65,7 @@ end
 robot = SerialLink(L, 'name', 'Robot Planar RRR');
 
 
-%% VARIÁVEIS GLOBAIS 
+%% VARI�?VEIS GLOBAIS 
 
 % transformações para os pontos que definem a trajectória do mamnipulador
 A_T_0 = [ 1     0         0   (1+sqrt(2))/2;
@@ -84,7 +84,7 @@ C_T_0 = [ 1     0         0           -1;
           0     0         0         1        ];
     
       
-% CINEMÁTICA INVERSA
+% CINEM�?TICA INVERSA
 
 % OBTER A CONFIGURAÇÃO DO MANIPULADOR (VALOR DAS JUNTAS) CORRESPONDENTE PARA OS PONTOS DA 
 % TRAJECTÓRIA DESEJADOS 
@@ -116,19 +116,20 @@ q_aux = [ theta1 theta2 ];
 [ pos, q_traj ] = calcula_trajectoria(T0_G, t, q_aux, q, v_q, h);
 
 
+
 %% MENU ("main")
 
 % Variaveis MENU
 select = 0;
-STOP = 5;
+STOP = 4;
 
 while(select ~= STOP)
     
     select = menu('Seleccione:', 'a) Pontos A B C',...
                                  'b) A->B->C',...
                                  'c) A->B->C->A->B->C',...
-                                 'd) Parabola',...
                                  'Quit');
+%                                 'd) Parabola',...
     
     %% a) Desenhe  as  configurações  do  manipulador  nos  três  pontos
     %     indique os respectivos valores das juntas para cada configuração
@@ -231,7 +232,7 @@ while(select ~= STOP)
         
         % Vector c/ valor das juntas nos pontos de passagens ; qB; qC
         q = [ qA; qB; qC; qA; qB; qC; qA; qB; qC ]; % Se fizermos para mais instantes é reptir estes pontos
-        
+       
         % Cálcula as velocidades para cada junta em cada instante
         v_q = calcula_velocidade(q, t);
         
@@ -244,16 +245,16 @@ while(select ~= STOP)
     end
     
     %% d) Movimento do manipulador adoptando funções parabólicas
-    if select == 4
-        
-       a_max = deg2rad(60);
-        
-       [ pos, q_traj ] = calcula_trajectoria2(T0_G, a_max, q, t, h);
-       
-       plotRobot2(robot, pos, [q_traj zeros(size(q_traj,1),1)], A_T_0, B_T_0, C_T_0);
-        
-       disp('#######################################################################')
-    end
+%     if select == 4
+%         
+%        a_max = deg2rad(60);
+%         
+%        [ pos_2, q_traj_2 ] = calcula_trajectoria2(T0_G, a_max, q_2, t, h);
+%        
+%        plotRobot2(robot, pos_2, [q_traj_2 zeros(size(q_traj_2,1),1)], A_T_0, B_T_0, C_T_0);
+%         
+%        disp('#######################################################################')
+%     end
     %
 end
 

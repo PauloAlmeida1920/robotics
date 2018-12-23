@@ -122,5 +122,6 @@ plotRobot2(robot, pos, [q_traj zeros(size(q_traj,1),1)], A_T_0, B_T_0, C_T_0);
 
 
 
+       
 
 
