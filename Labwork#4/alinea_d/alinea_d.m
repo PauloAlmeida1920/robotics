@@ -115,7 +115,6 @@ q = [ qA; qB; qC ]; % Se fizermo para mais instantes é reptir estes pontos
 
 a_max = deg2rad(60);
 
-
 [ pos, q_traj ] = calcula_trajectoria2(T0_G, a_max, q, t, h);
 
 plotRobot2(robot, pos, [q_traj zeros(size(q_traj,1),1)], A_T_0, B_T_0, C_T_0);

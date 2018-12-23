@@ -246,12 +246,12 @@ while(select ~= STOP)
     %% d) Movimento do manipulador adoptando funções parabólicas
     if select == 4
         
-       a_max = deg2rad(60);       
-       q = [qA; qB; qC];
+       a_max = deg2rad(60);
        
-       [ pos, q_traj ] = calcula_trajectoria2(T0_G, a_max, q, t, h);
+       q_2 = []
+       [ pos_2, q_traj_2 ] = calcula_trajectoria2(T0_G, a_max, q_2, t, h);
        
-        plotRobot2(robot, pos, [q_traj zeros(size(q_traj,1),1)], A_T_0, B_T_0, C_T_0);
+       plotRobot2(robot, pos_2, [q_traj_2 zeros(size(q_traj_2,1),1)], A_T_0, B_T_0, C_T_0);
         
        disp('#######################################################################')
     end

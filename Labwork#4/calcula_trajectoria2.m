@@ -14,8 +14,13 @@ tf = t(3);
 
 % Primeiro troço 
 a(1,:) = sign(q(2,:)-q(1,:))*abs(a_max);
+%a(1,:) = 4*(q(2,:) - q(1,:))/tf^2;
 ta(1,:) = tim - sqrt( tim^2 - (2 .* ( q(2,:) - q(1,:) )) ./ a(1,:) );
 v_q(1,:) = ( q(2,:) - q(1,:) ) ./ ( tim - (1/2) * ta(1,:) );
+
+a(1,2) = 0;
+ta(1,2) = 0;
+v_q(1,2) = 0;
 
 % Ultimo troço
 a(2,:) = sign( q(2,:) - q(3,:) ) * abs( a_max );
@@ -25,6 +30,10 @@ v_q(2,:) = ( q(3,:) - q(2,:) ) ./ ( tiM - (1/2) * ta(2,:) );
 % Troço Intermédio
 a(3,:) = sign( q(2,:) - q(1,:) ) * abs(a_max);
 ta(3,:) = ( v_q(2,:) - v_q(1,:) ) ./ a(3,:);
+disp(a(3,2))
+
+a(3,2) = 0;
+ta(3,2) = 0;
 
 % TA TB- TB+ TC
 qi = q(1,:) + (1/2) * a(1,:) .* ta(1,:).^2;
@@ -39,29 +48,40 @@ for th=ti:h:tf-h
         if( th >= ti && th < ta(1,k) )
             
             q_traj(i,k) = q(1,k) + 0.5 * a(1,k) * (th-ti)^2;
+            disp(q_traj)
             
         elseif( th >= ta(1,k) && th < tim - (1/2) * ta(3,k) )
             
             q_traj(i,k) = qi(k) + v_q(1,k) * (th - ta(1,k));
+            disp(q_traj)
             
         elseif( th >= tim - (1/2) * ta(3,k) && th <  tim + 0.5 * ta(3,k))
             
             q_traj(i,k) = qim(k) + ...
                           v_q(1,k) * ( th - (tim - 0.5 * ta(3,k))) + ...
                           (1/2) * a(3,k) * ( th - (tim - (1/2) * ta(3,k) ))^2;
-            
+            disp(q_traj)
+                      
         elseif( th >= tim + (1/2) * ta(3,k) && th <  tf - ta(2,k) )
             
             q_traj(i,k) = qiM(k) + ...
                           v_q(2,k) * ( th - ( tim + (1/2) * ta(3,k) ));
-            
+            disp(q_traj)
+                      
         elseif( th >=  tf - ta(2,k) && th < tf )
             
             q_traj(i,k) = qf(k) + ...
                           v_q(2,k) * (th - ( tf - ta(2,k) )) + ...
                           (1/2) * a(2,k) * ( th - ( tf - ta(2,k) ))^2;
+        disp(q_traj)
+        
         end
     end
+    
+    disp(a)
+    disp(ta)
+    disp(v_q)
+    
     % Calcula posiçoes
     oTg_ = eval(subs(oTg, [theta1 theta2], q_traj(i,:)));
     pos(i,:) = [ oTg_(1,4) oTg_(2,4) oTg_(3,4) ];
