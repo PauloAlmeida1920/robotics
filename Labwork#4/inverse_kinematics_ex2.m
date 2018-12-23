@@ -1,5 +1,5 @@
-%% FunÁ„o da Cinem·tica Inversa do Robot
-%  Expressıes fornecidas no enuciado
+%% Fun√ß√£o da Cinem√°tica Inversa do Robot
+%  Express√µes fornecidas no enuciado
 
 function [ q ] = inverse_kinematics_ex2(oTg)
 
@@ -10,13 +10,18 @@ tx = oTg(1,4);
 ty = oTg(2,4);
 tz = oTg(3,4);
 
-% expressıes para a cinem·tica inversa:
+% express√µes para a cinem√°tica inversa:
 
-theta1 = atan2(ty, tx);
+theta2 =  atan2( -tz, sqrt(tx^2 + ty^2 - 1));
+ 
+theta1 = atan2(ty, tx) - atan2(1, cos(theta2)); 
 
-theta2 = atan2( tz - d1, tx*cos(theta1) + ty*sin(theta1));
 
-% vector com par‚metros das juntas:
+% theta1 = atan2(ty, tx);
+% 
+% theta2 = atan2( tz - d1, tx*cos(theta1) + ty*sin(theta1));
+
+% vector com par√¢metros das juntas:
 
 q = [ theta1 theta2 ];
 

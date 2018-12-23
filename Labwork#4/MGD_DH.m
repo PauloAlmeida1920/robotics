@@ -3,9 +3,9 @@
 %  é obtida através da mutiplicação das matrizes/transformações 
 %  correspondentes a cada elo/junta de um robô
 
-function [ oTg, Ti ] = direct_kinematics(PJ_DH)
+function [ T0_G, Ti ] = MGD_DH(PJ_DH)
 
-    oTg = eye(4);
+    T0_G = eye(4);
 
     % Ciclo para percorrer as juntas todas do robot e gerar as
     % respectivas matrizes de transformação;
@@ -26,7 +26,12 @@ function [ oTg, Ti ] = direct_kinematics(PJ_DH)
 
         % Parâmetros de entrada: thetai di  alfai  ai
         Ti(:,:,i) = jointMatrix(thetai, di, alfai, ai);
-        oTg = oTg * Ti(:,:,i);
+        T0_G = T0_G * Ti(:,:,i);
 
     end
+    
+    
+    T0_G = simplify(T0_G);
+    Ti = simplify(Ti);
+    
 end

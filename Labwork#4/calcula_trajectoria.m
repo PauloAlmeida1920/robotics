@@ -1,25 +1,25 @@
 
-%% DESCRIÇÃO: Implementa a equação polinomial de 3ª ordem com componentes de posição e velocidade;
-% garante que a trajectória satisfaz uma posição e velocidade final
+%% DESCRIÃ‡ÃƒO: Implementa a equaÃ§Ã£o polinomial de 3Âª ordem com componentes de posiÃ§Ã£o e velocidade;
+% garante que a trajectÃ³ria satisfaz uma posiÃ§Ã£o e velocidade final
 % desejada.
-% - Continuidade e suavidade nas velocidades e acelerações das juntas;
-% - Evitar solicitações desmesuradas e irregulares nos actuadores.
+% - Continuidade e suavidade nas velocidades e aceleraÃ§Ãµes das juntas;
+% - Evitar solicitaÃ§Ãµes desmesuradas e irregulares nos actuadores.
 %###################################################################################################
 % ARGUMENTOS: 
-%       - <t> : variável simbólica para o tempo;
+%       - <t> : variÃ¡vel simbÃ³lica para o tempo;
 %
 %       - <ti> : instante inicial (t = ti);
 %
-%       - <qi> : valor das juntas na posição inicial (t = ti);
+%       - <qi> : valor das juntas na posiÃ§Ã£o inicial (t = ti);
 %
-%       - <qf> : valor das juntas na posição final;
+%       - <qf> : valor das juntas na posiÃ§Ã£o final;
 %
-%       - <delta_t> : diferença entre tempo no instante final e tempo no
+%       - <delta_t> : diferenÃ§a entre tempo no instante final e tempo no
 %       instante inicial;
 %
-%       - <v_qi> : velocidade das juntas na posição inicial (com t = ti)
+%       - <v_qi> : velocidade das juntas na posiÃ§Ã£o inicial (com t = ti)
 %
-%       - <v_qf> : velocidade dsa juntas na posição final
+%       - <v_qf> : velocidade dsa juntas na posiÃ§Ã£o final
 %
 %###################################################################################################
 
@@ -53,7 +53,7 @@ for i=1:size(t,2)-1 % Para cada instante i - linhas (um ponto)
                               (v_qf+v_qi))*(th-ti)^3;                      % a3*t^3
             
         end
-        % Calcula posições
+        % Calcula posiÃ§Ãµes
         oTg_ = eval(subs(oTg, q_aux, q_traj(count,:)));
         pos(count,:) = [ oTg_(1,4) oTg_(2,4) oTg_(3,4) ];
         

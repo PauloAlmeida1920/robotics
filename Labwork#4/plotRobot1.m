@@ -1,11 +1,11 @@
 
-%% Função apra realizar o plot de um Robô com duas vistas 
+%% FunÃ§Ã£o apra realizar o plot de um RobÃ´ com duas vistas 
 
 function plotRobot1(robot, pos, q_traj, A_T_0, B_T_0, C_T_0)
 
-% Plot segundo a Trajectória acima defenida
+% Plot segundo a TrajectÃ³ria acima defenida
 figure('units','normalized','outerposition',[0 0 1 1]);
-% Prespectiva de lado do Robô
+% Prespectiva de lado do RobÃ´
 subplot(1,2,1);
 
 plot3(pos(:,1), pos(:,2),  pos(:,3), 'b');
@@ -17,15 +17,15 @@ hold on
 plot3(C_T_0(1,4), C_T_0(2,4), C_T_0(3,4), 'rx');
 hold on
 xlim([-10 40])
-ylim([-10 40])
+ylim([-25 20])
 zlim([-10 30])
 
 grid on
 
-robot.plot([q_traj(1,:) 0], 'workspace', [-10 40 -10 40 -10 30], 'reach', 1, ...
-    'scale', 10, 'zoom', 0.5); % , 'trail', 'b.'); % 'view', 'top');
+robot.plot([q_traj(1,:) 0], 'workspace', [-10 40 -25 20 -10 30]);%,... %'reach', 1, 
+%    'scale', 10, 'zoom', 0.5); % , 'trail', 'b.'); % 'view', 'top');
 
-% Prespectiva de topo do Robô
+% Prespectiva de topo do RobÃ´
 subplot(1,2,2);
 
 plot3(pos(:,1), pos(:,2),  pos(:,3), 'b');
@@ -37,13 +37,13 @@ hold on
 plot3(C_T_0(1,4), C_T_0(2,4), C_T_0(3,4), 'rx');
 hold on
 xlim([-10 40])
-ylim([-10 40])
+ylim([-25 20])
 zlim([-10 30])
 
 grid on
 
-robot.plot([q_traj(1,:) 0], 'workspace', [-10 40 -10 40 -10 30], 'reach', 1, ...
-    'scale', 10, 'zoom', 0.5, 'view', 'top'); % 'trail', 'b.');
+robot.plot([q_traj(1,:) 0], 'workspace', [-10 40 -25 20 -10 30],'view','top');%,... %'reach', 1, ...
+%    'scale', 10, 'zoom', 0.5, 'view', 'top'); % 'trail', 'b.');
 
 for i=2:size(q_traj,1)
     
